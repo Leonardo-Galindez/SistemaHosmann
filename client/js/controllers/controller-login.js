@@ -65,9 +65,8 @@ form.addEventListener('submit', async (e) => {
         if (data.success) {
             showAlert("Login exitoso. Redirigiendo...", "success");
 
-            // Simulación de redirección
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "../SistemaHosmann/client/views/admin-home.php";
             }, 1500);
         } else {
             showAlert(data.message || "Credenciales incorrectas.");
