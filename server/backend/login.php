@@ -24,6 +24,7 @@ try {
     $stmt->execute([$email]);
     $usuario = $stmt->fetch();
 
+    // Verificar contraseña
     if ($usuario && password_verify($password, $usuario['password'])) {
         session_start();
         $_SESSION['usuario_id'] = $usuario['id'];

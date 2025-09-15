@@ -54,7 +54,7 @@ form.addEventListener('submit', async (e) => {
 
     try {
         // Aquí conectamos con PHP
-        const response = await fetch("/api/login.php", {
+        const response = await fetch("https://smartform.com.ar/SistemaHosmann/server/backend/login.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
