@@ -28,9 +28,8 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 
 <body>
-    <div id="app">
-    </div>
-
+    <div id="nav"></div>
+    <div id="main"></div>
     <script type="module" src="../js/controllers/render-admin.js"></script>
 
 </body>

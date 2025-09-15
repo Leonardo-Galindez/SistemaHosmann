@@ -35,8 +35,8 @@ body {
     "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol";
 
-  background: radial-gradient(1200px 800px at 20% -10%, #0b1530, transparent),
-    radial-gradient(800px 600px at 120% 20%, #0a223f, transparent), var(--bg);
+  background: radial-gradient(1200px 800px at 20% -10%, #070e22, transparent),
+    radial-gradient(800px 600px at 120% 20%, #071930, transparent), var(--bg);
 
   color: var(--text);
   line-height: 1.35;
