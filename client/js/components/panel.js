@@ -1,4 +1,4 @@
-export function crearFiltros() {
+export function crearPanel() {
     const section = document.createElement("section");
     section.id = "main-header";
     section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow";

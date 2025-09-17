@@ -1,5 +1,5 @@
 import { crearNavbar } from '../components/nav.js';
-import { crearFiltros } from "../components/btn-filtros.js";
+import { crearPanel } from "../components/panel.js";
 import { crearTabla } from "../components/tabla.js";
 import { crearFooter } from "../components/footer.js";
 
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mainContainer.appendChild(main);
 
     // Secciones dentro del main
-    main.appendChild(crearFiltros());
+    main.appendChild(crearPanel());
     main.appendChild(crearTabla());
     main.appendChild(crearFooter());
 });
