@@ -54,7 +54,7 @@ form.addEventListener('submit', async (e) => {
 
     try {
         // Aquí conectamos con PHP
-        const response = await fetch("https://smartform.com.ar/SistemaHosmann/server/backend/login.php", {
+        const response = await fetch("https://smartform.com.ar/hosmann/administracion/server/backend/login.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -66,7 +66,7 @@ form.addEventListener('submit', async (e) => {
             showAlert("Login exitoso. Redirigiendo...", "success");
 
             setTimeout(() => {
-                window.location.href = "../SistemaHosmann/client/views/admin-home.php";
+                window.location.href = "../administracion/client/views/admin-home.php";
             }, 1500);
         } else {
             showAlert(data.message || "Credenciales incorrectas.");
