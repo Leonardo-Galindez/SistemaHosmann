@@ -31,6 +31,7 @@ if (!isset($_SESSION['usuario_id'])) {
     <div id="nav"></div>
     <div id="main"></div>
     <script type="module" src="../js/controllers/render-admin.js"></script>
+    <script type="module" src="../js/controllers/controller-table.js"></script>
 
 </body>
 

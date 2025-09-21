@@ -25,7 +25,7 @@ export function crearNavbar() {
                     <a href="#usuarios" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
                          <i class='bx bx-user'></i> Usuarios
                     </a>
-                    <a href="#tablero" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
+                    <a href="https://smartform.com.ar/hosmann/administracion/client/views/admin-tablero.php" target= "_blank"class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
                          <i class='bx bx-table'></i> Tablero
                     </a>
                     <!-- Botón salir -->

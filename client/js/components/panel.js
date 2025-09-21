@@ -8,12 +8,12 @@ export function crearPanel() {
             <h1 class="text-xl font-semibold text-white">Gestión de Partes</h1>
             <div class="flex gap-2">
                 <!-- Botón Filtrar -->
-                <button class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+                <button id="btn-filtros"class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition">
                     <i class='bx bx-filter text-base'></i> Filtros
                 </button>
 
                 <!-- Botón Descargar Reporte -->
-                <button class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700 transition">
+                <button id="btn-descargar" class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700 transition">
                     <i class='bx bx-download text-base'></i> Reporte
                 </button>
             </div>
