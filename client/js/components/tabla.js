@@ -96,3 +96,91 @@ export function crearTabla() {
 
     return section;
 }
+
+
+export function crearTablaUsuarios() {
+    const section = document.createElement("section");
+    section.id = "tabla-usuarios";
+    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
+
+    section.innerHTML = `
+        <table class="w-full text-sm text-white border-collapse">
+            <thead class="bg-slate-900/80 text-white uppercase text-xs tracking-wide">
+                <tr>
+                    <th class="px-4 py-3 text-center">ID</th>
+                    <th class="px-4 py-3 text-center">Nombre</th>
+                    <th class="px-4 py-3 text-center">Apellido</th>
+                    <th class="px-4 py-3 text-center">Teléfono</th>
+                    <th class="px-4 py-3 text-center">Correo</th>
+                    <th class="px-4 py-3 text-center">Tipo</th>
+                    <th class="px-4 py-3 text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${[1,2,3,4,5].map(i => `
+                <tr class="cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${i}">
+                    <td class="px-4 py-2 text-center">${i}</td>
+                    <td class="px-4 py-2 text-center">Nombre ${i}</td>
+                    <td class="px-4 py-2 text-center">Apellido ${i}</td>
+                    <td class="px-4 py-2 text-center">2994${i}000${i}</td>
+                    <td class="px-4 py-2 text-center">usuario${i}@correo.com</td>
+                    <td class="px-4 py-2 text-center">${i % 2 === 0 ? "admin" : "cliente"}</td>
+                    <td class="px-4 py-2 flex justify-center gap-2">
+                        <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar-usuario" title="Editar-usuario">
+                            <i class='bx bx-pencil'></i>
+                        </button>
+                        <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar-usuario" title="Eliminar-usuario">
+                            <i class='bx bx-trash'></i>
+                        </button>
+                    </td>
+                </tr>
+                `).join("")}
+            </tbody>
+        </table>
+    `;
+
+    return section;
+}
+
+
+export function crearTablaClientes() {
+    const section = document.createElement("section");
+    section.id = "tabla-clientes";
+    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
+
+    section.innerHTML = `
+        <table class="w-full text-sm text-white border-collapse">
+            <thead class="bg-slate-900/80 text-white uppercase text-xs tracking-wide">
+                <tr>
+                    <th class="px-4 py-3 text-center">ID</th>
+                    <th class="px-4 py-3 text-center">CUIT</th>
+                    <th class="px-4 py-3 text-center">Razón Social</th>
+                    <th class="px-4 py-3 text-center">Correo</th>
+                    <th class="px-4 py-3 text-center">Dirección</th>
+                    <th class="px-4 py-3 text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${[1,2,3,4,5].map(i => `
+                <tr class="cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${i}">
+                    <td class="px-4 py-2 text-center">${i}</td>
+                    <td class="px-4 py-2 text-center">20-1234567${i}-0</td>
+                    <td class="px-4 py-2 text-center">Cliente ${i} SRL</td>
+                    <td class="px-4 py-2 text-center">cliente${i}@empresa.com</td>
+                    <td class="px-4 py-2 text-center">Calle Falsa ${i*100}, Ciudad</td>
+                    <td class="px-4 py-2 flex justify-center gap-2">
+                        <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar-cliente" title="Editar-cliente">
+                            <i class='bx bx-pencil'></i>
+                        </button>
+                        <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar-cliente" title="Eliminar-cliente">
+                            <i class='bx bx-trash'></i>
+                        </button>
+                    </td>
+                </tr>
+                `).join("")}
+            </tbody>
+        </table>
+    `;
+
+    return section;
+}

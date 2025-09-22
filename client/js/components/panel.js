@@ -22,3 +22,52 @@ export function crearPanel() {
 
     return section;
 }
+
+export function crearUsuarios() {
+    const section = document.createElement("section");
+    section.id = "usuarios-header";
+    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow";
+
+    section.innerHTML = `
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-white">Gestión de Usuarios</h1>
+            <div class="flex gap-2">
+                <!-- Botón Agregar Usuario -->
+                <button id="btn-agregar-usuario" class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700 transition">
+                    <i class='bx bx-user-plus text-base'></i> Agregar Usuario
+                </button>
+
+                <!-- Botón Filtrar -->
+                <button id="btn-filtros-usuarios" class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+                    <i class='bx bx-filter text-base'></i> Filtros
+                </button>
+            </div>
+        </div>
+    `;
+
+    return section;
+}
+
+export function crearClientes() {
+    const section = document.createElement("section");
+    section.id = "main-header";
+    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow";
+
+    section.innerHTML = `
+        <div class="flex justify-between items-center">
+            <h1 class="text-xl font-semibold text-white">Gestión de Clientes</h1>
+            <div class="flex gap-2">
+             <!-- Botón Agregar Usuario -->
+                <button id="btn-agregar-usuario" class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-green-600 text-white hover:bg-green-700 transition">
+                    <i class='bx bx-user-plus text-base'></i> Agregar Usuario
+                </button>
+                <!-- Botón Filtrar -->
+                <button id="btn-filtros-clientes"class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+                    <i class='bx bx-filter text-base'></i> Filtros
+                </button>
+            </div>
+        </div>
+    `;
+
+    return section;
+}

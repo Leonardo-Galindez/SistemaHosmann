@@ -4,7 +4,7 @@ import { crearFormFiltros } from "../components/form-filtros.js";
 export function initRemitoController() {
     const botonesEditar = document.querySelectorAll("button[title='Editar']");
     const botonesEliminar = document.querySelectorAll("button[title='Eliminar']");
-    const botonFiltros = document.querySelector("#btn-filtros"); // 🔹 botón Filtros
+    const botonFiltros = document.querySelector("#btn-filtros");
 
     // Acción Editar → abre formulario
     botonesEditar.forEach(btn => {
@@ -30,9 +30,6 @@ export function initRemitoController() {
     }
 }
 
-/* =======================
-   FORMULARIO PRINCIPAL
-   ======================= */
 function abrirFormulario() {
     const modal = document.createElement("div");
     modal.id = "modal-remito";
@@ -123,9 +120,7 @@ function cerrarFiltros() {
     if (modal) modal.remove();
 }
 
-/* =======================
-   CONFIRMACIONES
-   ======================= */
+
 function abrirConfirmacionCerrar() {
     if (document.getElementById("confirmCloseModal")) return;
 

@@ -110,3 +110,122 @@ export function crearFormUpdate() {
 
     return section;
 }
+
+
+export function crearFormUsuario() {
+    const section = document.createElement("form");
+    section.id = "usuario-form";
+    section.className = "fixed inset-0 flex items-center justify-center bg-black/60 z-50";
+
+    section.innerHTML = `
+        <div class="bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700 max-w-3xl w-full flex flex-col overflow-hidden max-h-screen overflow-y-auto">
+        
+            
+            <!-- Header -->
+            <div class="flex justify-between items-center bg-slate-800/90 px-6 py-4 border-b border-slate-700">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class='bx bx-user text-blue-400 text-2xl'></i> Formulario Usuario
+                </h2>
+                <button id="cerrar-form-usuario" type="button" class="text-slate-400 hover:text-red-500 transition text-xl">
+                    <i class='bx bx-x'></i>
+                </button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="overflow-y-auto p-6 grid grid-cols-1 gap-6 text-sm text-white">
+
+                <div>
+                    <label class="block mb-1 text-slate-300">ID</label>
+                    <input type="text" class="input" />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Nombre</label>
+                    <input type="text" class="input" required />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Apellido</label>
+                    <input type="text" class="input" required />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Teléfono</label>
+                    <input type="tel" class="input" />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Correo</label>
+                    <input type="email" class="input" required />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Contraseña</label>
+                    <input type="password" id="password" class="input" required />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Repetir Contraseña</label>
+                    <input type="password" id="password2" class="input" required />
+                    <p id="password-error" class="text-red-500 text-xs mt-1 hidden">Las contraseñas no coinciden</p>
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Tipo de Usuario</label>
+                    <select class="input" required>
+                        <option value="">Seleccione un tipo</option>
+                        <option value="admin">Admin</option>
+                        <option value="cliente">Cliente</option>
+                    </select>
+                </div>
+
+                <!-- Botones -->
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition flex items-center gap-2 shadow-md">
+                        <i class='bx bx-save text-lg'></i> Guardar
+                    </button>
+                    <button type="reset" class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition flex items-center gap-2 shadow-md">
+                        <i class='bx bx-x-circle text-lg'></i> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+
+    // Clase de estilo para inputs
+    const style = document.createElement("style");
+    style.textContent = `
+        .input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: rgb(30 41 59); /* slate-800 */
+            border: 1px solid rgb(71 85 105); /* slate-600 */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .input:focus {
+            outline: none;
+            border-color: rgb(59 130 246); /* blue-500 */
+            box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
+        }
+    `;
+    section.appendChild(style);
+
+    // ---- Validación de contraseñas ----
+    section.addEventListener("submit", (e) => {
+        const pass = section.querySelector("#password").value;
+        const pass2 = section.querySelector("#password2").value;
+        const error = section.querySelector("#password-error");
+
+        if (pass !== pass2) {
+            e.preventDefault();
+            error.classList.remove("hidden");
+        } else {
+            error.classList.add("hidden");
+        }
+    });
+
+
+    return section;
+}
