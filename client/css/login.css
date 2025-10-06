@@ -1,0 +1,14 @@
+:root {
+  --bg: #0f172a;       /* slate-900 */
+  --surface: #111827;
+  --card: rgb(226, 109, 31);
+}
+
+body {
+  background: var(--bg);
+  font-family: "Inter", sans-serif;
+}
+
+.logo{
+    border-radius: 10px;
+}

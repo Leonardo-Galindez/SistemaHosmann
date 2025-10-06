@@ -1,0 +1,43 @@
+:root {
+  --bg: #0f172a;
+  /* slate-900 */
+  --surface: #111827;
+  /* gray-900 */
+  --card: #b16330ff;
+  /* azul muy oscuro para cartas */
+  --muted: #94a3b8;
+  /* slate-400 */
+  --text: #e5e7eb;
+  /* gray-200 */
+  --primary: #ca8b16ff;
+  /* indigo-600 */
+  --primary-50: rgba(37, 99, 235, 0.12);
+  --accent: #f59e0b;
+  /* amber-500 */
+  --accent-50: rgba(245, 158, 11, 0.12);
+  --danger: #ef4444;
+  /* red-500 */
+  --success: #22c55e;
+  /* green-500 */
+  --warning: #f59e0b;
+  --radius: 14px;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0; /* por las dudas */
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+    "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+
+  background: radial-gradient(1200px 800px at 20% -10%, #070e22, transparent),
+    radial-gradient(800px 600px at 120% 20%, #071930, transparent), var(--bg);
+
+  color: var(--text);
+  line-height: 1.35;
+}
