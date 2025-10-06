@@ -1,8 +1,8 @@
 export function crearTablaPartes() {
-    const section = document.createElement("section");
-    section.id = "tabla-partes";
-    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
-    section.innerHTML = `
+    const tablaPartes = document.createElement("section");
+    tablaPartes.id = "tabla-partes";
+    tablaPartes.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
+    tablaPartes.innerHTML = `
             <table class="w-full text-sm text-white border-collapse">
                 <thead class="bg-slate-900/80 text-white uppercase text-xs tracking-wide">
                     <tr>
@@ -22,21 +22,26 @@ export function crearTablaPartes() {
 
             <div class="flex justify-center items-center gap-4 mt-4">
                 <button id="btn-prev" 
-                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page <= 1 ? "opacity-50 cursor-not-allowed" : ""}">
+                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">
                     Anterior
                 </button>
 
-                <span class="text-white text-sm">Página ${result.currentPage} de ${result.totalPages}</span>
+                <span class="text-white text-sm">Página </span>
 
                 <button id="btn-next" 
-                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page >= result.totalPages ? "opacity-50 cursor-not-allowed" : ""}">
+                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">
                     Siguiente
                 </button>
             </div>
 
     `;
 
-    return section;
+    const navContainer = document.getElementById("main");
+    if (navContainer) {
+        navContainer.appendChild(tablaPartes);
+    } else {
+        console.warn("No se encontró el contenedor #main para insertar la tabla.");
+    }
 }
 
 export function crearTablaUsuarios() {

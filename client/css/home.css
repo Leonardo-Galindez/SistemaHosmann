@@ -43,5 +43,26 @@ body {
 }
 
 #panel {
-  margin-top: 100px; /* ajusta según la altura real del nav */
+  margin-top: 100px;     /* separación del nav */
+  width: 95vw;           /* 90% del ancho visible de la ventana */
+  margin-left: auto;     /* centra el panel horizontalmente */
+  margin-right: auto;
+  height: auto;          /* ajusta la altura automáticamente */
+}
+
+#main {
+  width: 95vw;           /* 90% del ancho de la ventana */
+  margin-left: auto;     /* centra el contenido */
+  margin-right: auto;
+  margin-top: 20px;      /* separa un poco del panel */
+  min-height: 50vh;      /* altura mínima (opcional) */
+}
+
+#footer {
+  width: 95vw;           /* 90% del ancho de la ventana */
+  margin-left: auto;     /* centra el contenido */
+  margin-right: auto;
+  margin-top: 20px;      /* separa un poco del main */
+  margin-bottom: 20px;   /* separa un poco del borde inferior */
+  height: auto;          /* ajusta la altura automáticamente */
 }
