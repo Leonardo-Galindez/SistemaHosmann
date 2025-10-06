@@ -45,11 +45,11 @@ export function crearTablaPartes() {
 }
 
 export function crearTablaUsuarios() {
-    const section = document.createElement("section");
-    section.id = "tabla-usuarios";
-    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
+    const tablaUsuarios = document.createElement("section");
+    tablaUsuarios.id = "tabla-usuarios";
+    tablaUsuarios.className = "hidden bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
 
-    section.innerHTML = `
+    tablaUsuarios.innerHTML = `
         <table class="w-full text-sm text-white border-collapse">
             <thead class="bg-slate-900/80 text-white uppercase text-xs tracking-wide">
                 <tr>
@@ -68,15 +68,20 @@ export function crearTablaUsuarios() {
         </table>
     `;
 
-    return section;
+    const navContainer = document.getElementById("main");
+    if (navContainer) {
+        navContainer.appendChild(tablaUsuarios);
+    } else {
+        console.warn("No se encontró el contenedor #main para insertar la tabla.");
+    }
 }
 
 export function crearTablaClientes() {
-    const section = document.createElement("section");
-    section.id = "tabla-clientes";
-    section.className = "bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
+    const tablaClientes = document.createElement("section");
+    tablaClientes.id = "tabla-clientes";
+    tablaClientes.className = "hidden bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow overflow-x-auto";
 
-    section.innerHTML = `
+    tablaClientes.innerHTML = `
         <table class="w-full text-sm text-white border-collapse">
             <thead class="bg-slate-900/80 text-white uppercase text-xs tracking-wide">
                 <tr>
@@ -94,5 +99,10 @@ export function crearTablaClientes() {
         </table>
     `;
 
-    return section;
+    const navContainer = document.getElementById("main");
+    if (navContainer) {
+        navContainer.appendChild(tablaClientes);
+    } else {
+        console.warn("No se encontró el contenedor #main para insertar la tabla.");
+    }
 }
