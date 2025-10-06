@@ -29,6 +29,7 @@ if (!isset($_SESSION['usuario_id'])) {
 
 <body>
     <div id="nav"></div>
+    <div id="panel"></div>
     <div id="main"></div>
     <script type="module" src="../controllers/render-admin.js"></script>
 </body>

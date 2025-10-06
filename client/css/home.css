@@ -41,3 +41,7 @@ body {
   color: var(--text);
   line-height: 1.35;
 }
+
+#panel {
+  margin-top: 100px; /* ajusta según la altura real del nav */
+}
