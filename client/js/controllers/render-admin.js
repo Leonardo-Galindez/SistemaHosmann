@@ -5,7 +5,7 @@ import { crearPanel } from "../components/panel.js";
 import { crearTabla } from "../components/tabla.js";
 
 // Usuarios
-import { crearUsuarios } from "../components/panel.js";  
+import { crearUsuarios } from "../components/panel.js";
 import { crearTablaUsuarios } from "../components/tabla.js";
 
 // Clientes
@@ -16,8 +16,9 @@ import { crearTablaClientes } from "../components/tabla.js";
 import { crearFooter } from "../components/footer.js";
 import { initRemitoController } from "../controllers/controller-table.js";
 import { initUsuarioControllerUsuario } from "../controllers/controller-usuarios.js";
+import { initClienteController } from "../controllers/controller-clientes.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const nav = document.getElementById("nav");
     const mainContainer = document.getElementById("main");
 
@@ -30,15 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
     mainContainer.appendChild(main);
 
     // --- Secciones ---
-    // Partes
     const panelPartes = crearPanel();
-    const tablaPartes = crearTabla();
+    let tablaPartes = await crearTabla();
 
-    // Usuarios
     const panelUsuarios = crearUsuarios();
     const tablaUsuarios = crearTablaUsuarios();
 
-    // Clientes
     const panelClientes = crearClientes();
     const tablaClientes = crearTablaClientes();
 
@@ -59,26 +57,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     initRemitoController();
     initUsuarioControllerUsuario();
+    initClienteController();
 
-    // ---- Función genérica para mostrar secciones ----
-    function mostrarSeccion(seccion) {
+    document.addEventListener("tablaPartesActualizada", (e) => {
+        tablaPartes = e.detail; // actualizar referencia a la nueva tabla
+    });
+
+    async function mostrarSeccion(seccion) {
         const todas = [
             { panel: panelPartes, tabla: tablaPartes },
             { panel: panelUsuarios, tabla: tablaUsuarios },
             { panel: panelClientes, tabla: tablaClientes }
         ];
 
-        // Ocultar todas
+        // Ocultar todas las secciones
         todas.forEach(({ panel, tabla }) => {
             panel.classList.add("hidden");
             tabla.classList.add("hidden");
         });
 
-        // Mostrar solo la seleccionada
+        document.querySelectorAll("#modal-remito, #modal-filtros, #confirmDeleteModal, #confirmCloseModal")
+            .forEach(el => el.remove());
+
+        // Mostrar solo la sección seleccionada
         if (seccion === "partes") {
             panelPartes.classList.remove("hidden");
-            tablaPartes.classList.remove("hidden");
-        } else if (seccion === "usuarios") {
+
+            const tablaExistente = document.querySelector("#main-table");
+            if (tablaExistente) tablaExistente.remove();
+
+            // Crear y agregar la nueva tabla
+            tablaPartes = await crearTabla();
+            panelPartes.insertAdjacentElement("afterend", tablaPartes);
+            initRemitoController();
+        }
+        else if (seccion === "usuarios") {
             panelUsuarios.classList.remove("hidden");
             tablaUsuarios.classList.remove("hidden");
         } else if (seccion === "clientes") {
@@ -88,18 +101,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ---- Navegación ----
-    document.querySelector("a[href='#usuarios']").addEventListener("click", (e) => {
-        e.preventDefault();
-        mostrarSeccion("usuarios");
+    document.querySelectorAll("a[href='#usuarios']").forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            mostrarSeccion("usuarios");
+            document.getElementById("mobileMenu")?.classList.add("hidden");
+        });
     });
 
-    document.querySelector("a[href='#partes']").addEventListener("click", (e) => {
-        e.preventDefault();
-        mostrarSeccion("partes");
+    document.querySelectorAll("a[href='#partes']").forEach(link => {
+        link.addEventListener("click", async (e) => {
+            e.preventDefault();
+            await mostrarSeccion("partes");
+            document.getElementById("mobileMenu")?.classList.add("hidden");
+        });
     });
 
-    document.querySelector("a[href='#clientes']").addEventListener("click", (e) => {
-        e.preventDefault();
-        mostrarSeccion("clientes");
+    document.querySelectorAll("a[href='#clientes']").forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            mostrarSeccion("clientes");
+            document.getElementById("mobileMenu")?.classList.add("hidden");
+        });
     });
+
 });

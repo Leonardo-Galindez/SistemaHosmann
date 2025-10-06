@@ -31,6 +31,17 @@ export function crearFormFiltros() {
                         </select>
                     </div>
 
+                    <!-- Estado -->
+                    <div>
+                        <label class="block mb-1 text-slate-300">Estado</label>
+                        <select id="filtro-estado" class="input">
+                            <option value="">Seleccione un estado</option>
+                            <option value="APROBADO">Aprobado</option>
+                            <option value="DESAPROBADO">Desaprobado</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                        </select>
+                    </div>
+
                     <!-- Fechas -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -45,22 +56,23 @@ export function crearFormFiltros() {
 
                     <!-- Botones -->
                     <div class="flex justify-end gap-3 mt-4">
-                        <button type="button" id="btn-aplicar" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition flex items-center gap-2 shadow-md">
-                            <i class='bx bx-check-circle text-lg'></i> Aplicar
+                        <button type="button" id="btn-aplicar" class="px-2 py-1 rounded-md bg-green-600 text-white hover:bg-green-700 transition flex items-center gap-1 shadow-sm text-sm">
+                            <i class='bx bx-check-circle text-base'></i> Aplicar
                         </button>
-                        <button type="reset" id="btn-limpiar" class="px-5 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition flex items-center gap-2 shadow-md">
-                            <i class='bx bx-eraser text-lg'></i> Limpiar
+                        <button type="reset" id="btn-limpiar" class="px-2 py-1 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 transition flex items-center gap-1 shadow-sm text-sm">
+                            <i class='bx bx-eraser text-base'></i> Limpiar
                         </button>
-                        <button type="button" id="btn-cancelar" class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition flex items-center gap-2 shadow-md">
-                            <i class='bx bx-x-circle text-lg'></i> Cancelar
+                        <button type="button" id="btn-cancelar" class="px-2 py-1 rounded-md bg-red-600 text-white hover:bg-red-700 transition flex items-center gap-1 shadow-sm text-sm">
+                            <i class='bx bx-x-circle text-base'></i> Cancelar
                         </button>
                     </div>
+
                 </form>
             </div>
         </div>
     `;
 
-    // Clase de estilo para inputs
+    // Estilos de inputs
     const style = document.createElement("style");
     style.textContent = `
         .input {

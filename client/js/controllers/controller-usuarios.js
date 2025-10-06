@@ -1,4 +1,4 @@
-import { crearFormUsuario } from "../components/form-update.js";
+import { crearFormUsuario } from "../components/form.js";
 
 export function initUsuarioControllerUsuario() {
     const botonesEditar = document.querySelectorAll("#tabla-usuarios .btn-editar-usuario");
@@ -8,6 +8,7 @@ export function initUsuarioControllerUsuario() {
     // Acción Editar → abre formulario usuario
     botonesEditar.forEach(btn => {
         btn.addEventListener("click", () => {
+            console.log("hgola")
             abrirFormularioUsuario();
         });
     });
@@ -157,3 +158,5 @@ function cerrarFormularioUsuario() {
     const modal = document.getElementById("modal-usuario");
     if (modal) modal.remove();
 }
+
+

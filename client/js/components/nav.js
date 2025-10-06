@@ -2,20 +2,27 @@ export function crearNavbar() {
     const nav = document.createElement("nav");
     nav.className = [
         "fixed top-0 left-0 w-full z-50",
-        "bg-transparent",                    // fondo 100% transparente
-        "backdrop-blur-md backdrop-saturate-150", // difuminado al pasar sobre contenido
-        "border-b border-white/10"           // línea sutil opcional
+        "bg-transparent",                    
+        "backdrop-blur-md backdrop-saturate-150",
+        "border-b border-white/10"           
     ].join(" ");
-
 
     nav.innerHTML = `
         <div class="w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
                 <a href="#" class="flex items-center gap-2">
                     <img src="../assets/img/logo.png" alt="Hosmann Logo" class="h-8 w-8 rounded">
                     <span class="text-white font-bold text-xl">Hosmann</span>
                 </a>
-                <div class="flex gap-3 items-center">
+
+                <!-- Botón hamburguesa (solo móvil) -->
+                <button id="menuToggle" class="lg:hidden text-white text-2xl focus:outline-none">
+                    <i class="bx bx-menu"></i>
+                </button>
+
+                <!-- Links escritorio -->
+                <div class="hidden lg:flex gap-3 items-center">
                     <a href="#partes" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
                          <i class='bx bx-file'></i> Partes
                     </a>
@@ -37,9 +44,30 @@ export function crearNavbar() {
                 </div>
             </div>
         </div>
+
+        <!-- Menú móvil -->
+        <div id="mobileMenu" class="hidden lg:hidden flex-col bg-gray-900/95 px-4 py-4 space-y-2">
+            <a href="#partes" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+                <i class='bx bx-file'></i> Partes
+            </a>
+            <a href="#clientes" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+                <i class='bx bx-buildings'></i> Clientes
+            </a>
+            <a href="#usuarios" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+                <i class='bx bx-user'></i> Usuarios
+            </a>
+            <a href="https://smartform.com.ar/hosmann/administracion/client/views/admin-tablero.php" target="_blank" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+                <i class='bx bx-table'></i> Tablero
+            </a>
+            <a href="#" onclick="document.getElementById('logoutModal').classList.remove('hidden'); return false;" class="flex items-center gap-2 px-3 py-2 text-red-400 border border-red-500/50 rounded-md hover:text-red-200 hover:bg-red-600/20 transition">
+                <i class='bx bx-log-out'></i> Salir
+            </a>
+        </div>
+
         <!-- Modal -->
-        <div id="logoutModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm w-full">
+        <div id="logoutModal" class="hidden fixed inset-0 bg-black/50 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm w-full 
+                        absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Cerrar sesión</h2>
                 <p class="text-gray-600 dark:text-gray-300 mb-6">¿Seguro que quieres cerrar tu sesión?</p>
                 <div class="flex justify-end gap-3">
@@ -55,6 +83,15 @@ export function crearNavbar() {
             </div>
         </div>
     `;
+
+    // Script para toggle menú móvil
+    setTimeout(() => {
+        const toggle = nav.querySelector("#menuToggle");
+        const menu = nav.querySelector("#mobileMenu");
+        toggle?.addEventListener("click", () => {
+            menu.classList.toggle("hidden");
+        });
+    }, 0);
 
     return nav;
 }
