@@ -33,6 +33,7 @@ if (!isset($_SESSION['usuario_id'])) {
     <div id="main"></div>
     <div id="footer"></div>
     <script type="module" src="../controllers/render-admin.js"></script>
+    <script type="module" src="../controllers/controller-nav.js"></script>
 </body>
 
 </html>
