@@ -66,3 +66,13 @@ body {
   margin-bottom: 20px;   /* separa un poco del borde inferior */
   height: auto;          /* ajusta la altura automáticamente */
 }
+
+#tabla-partes {
+  position: relative;
+  z-index: 1;
+}
+
+#tabla-partes tr:first-child td {
+  position: relative;
+  z-index: 2;
+}

@@ -20,20 +20,6 @@ export function crearTablaPartes() {
                 </tbody>
             </table>
 
-            <div class="flex justify-center items-center gap-4 mt-4">
-                <button id="btn-prev" 
-                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">
-                    Anterior
-                </button>
-
-                <span class="text-white text-sm">Página </span>
-
-                <button id="btn-next" 
-                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600">
-                    Siguiente
-                </button>
-            </div>
-
     `;
 
     const navContainer = document.getElementById("main");
