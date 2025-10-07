@@ -34,7 +34,9 @@ if (!isset($_SESSION['usuario_id'])) {
     <div id="footer"></div>
     <script type="module" src="../controllers/render-admin.js"></script>
     <script type="module" src="../controllers/controller-nav.js"></script>
+    <script type="module" src="../controllers/controller-filtros.js"></script>
     <script type="module" src="../controllers/controller-tabla-partes.js"></script>
+    
 </body>
 
 </html>

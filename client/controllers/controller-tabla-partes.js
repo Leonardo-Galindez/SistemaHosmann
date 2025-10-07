@@ -1,9 +1,9 @@
 import { crearFormPartes } from "../components/forms.js";
 
-let page = 1;
-const limit = 10;
+export let page = 1;
+export const limit = 10;
+let filtrosActivos = {};
 
-// 🔹 Función para escapar caracteres especiales y evitar romper el HTML
 function escapeHTML(str) {
     if (str === null || str === undefined) return "-";
     return str.toString().replace(/[&<>"']/g, (m) => ({
@@ -15,8 +15,24 @@ function escapeHTML(str) {
     }[m]));
 }
 
-export async function fetchAndRenderPartes() {
+export async function fetchAndRenderPartes(filtros = {}) {
+
+    if (Object.keys(filtros).length > 0) {
+        filtrosActivos = filtros;
+        page = 1; // 🔹 siempre volver a la primera página al aplicar filtros
+    }
+
+    // usamos los filtros activos (aunque no vengan nuevos)
+    const { cliente = "", estado = "", fechaInicio = "", fechaFin = "" } = filtrosActivos;
+
     const params = new URLSearchParams({ page, limit });
+
+    // Agregamos los filtros al query solo si tienen valor
+    if (cliente) params.append("cliente", cliente);
+    if (estado) params.append("estado", estado);
+    if (fechaInicio) params.append("fechaInicio", fechaInicio);
+    if (fechaFin) params.append("fechaFin", fechaFin);
+
     const section = document.getElementById("tabla-partes");
     const tbody = document.getElementById("tablaPartes");
 
@@ -26,13 +42,13 @@ export async function fetchAndRenderPartes() {
     }
 
     try {
-        // Limpiar el contenido mientras carga
         tbody.innerHTML = `<tr><td colspan="7" class="text-center text-white py-4">Cargando...</td></tr>`;
 
-        const response = await fetch(`https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_partes.php?${params.toString()}`);
+        const response = await fetch(
+            `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_partes.php?${params.toString()}`
+        );
         const result = await response.json();
 
-        // Validar respuesta del backend
         if (!result.success) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-red-500 text-center py-4">${escapeHTML(result.message ?? "Error al cargar los partes.")}</td></tr>`;
             return;
@@ -44,9 +60,8 @@ export async function fetchAndRenderPartes() {
             return;
         }
 
-        // Renderizar filas
+        // 🔹 Renderizamos las filas igual que antes
         tbody.innerHTML = partes.map((p) => {
-            // Colores según estado
             let estadoColor = "bg-yellow-600 hover:bg-yellow-700";
             let iconoColor = "text-yellow-400";
             if (p.estado === "APROBADO") {
@@ -58,7 +73,6 @@ export async function fetchAndRenderPartes() {
             }
 
             return `
-            <!-- Fila resumen -->
             <tr class="fila-parte cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${escapeHTML(p.nroParte)}">
                 <td class="px-4 py-2 text-center">${escapeHTML(p.nroParte)}</td>
                 <td class="px-4 py-2 text-center">${escapeHTML(p.fecha_formateada ?? p.fecha)}</td>
@@ -68,17 +82,12 @@ export async function fetchAndRenderPartes() {
                 <td class="px-4 py-2 text-center">${escapeHTML(p.kmRecorridos ?? 0)}</td>
                 <td class="px-4 py-2">
                     <div class="flex justify-center gap-2 acciones">
-                        <!-- Editar -->
                         <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar" title="Editar">
                             <i class='bx bx-pencil'></i>
                         </button>
-
-                        <!-- Eliminar -->
                         <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar" title="Eliminar">
                             <i class='bx bx-trash'></i>
                         </button>
-
-                        <!-- Estado -->
                         <button class="px-2 py-1 text-xs rounded text-white transition flex items-center btn-estado ${estadoColor}" 
                                 data-estado="${escapeHTML(p.estado ?? 'PENDIENTE')}"
                                 title="Cambiar estado">
@@ -87,8 +96,6 @@ export async function fetchAndRenderPartes() {
                     </div>
                 </td>
             </tr>
-
-            <!-- Fila detalle -->
             <tr class="fila-detalle hidden bg-slate-700/40">
                 <td colspan="7" class="px-6 py-4 text-sm">
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-slate-200 text-xs md:text-sm">
@@ -113,46 +120,37 @@ export async function fetchAndRenderPartes() {
             `;
         }).join("");
 
-        // PAGINACIÓN (limpieza previa)
+        // Paginación igual que antes
         section.querySelector(".paginacion")?.remove();
-
         const paginacionHTML = `
             <div class="paginacion flex justify-center items-center gap-4 mt-4">
                 <button id="btn-prev" 
                     class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page <= 1 ? "opacity-50 cursor-not-allowed" : ""}">
                     Anterior
                 </button>
-
                 <span class="text-white text-sm">Página ${result.currentPage} de ${result.totalPages}</span>
-
                 <button id="btn-next" 
                     class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page >= result.totalPages ? "opacity-50 cursor-not-allowed" : ""}">
                     Siguiente
                 </button>
             </div>
         `;
-
         section.insertAdjacentHTML("beforeend", paginacionHTML);
 
-        // === Eventos ===
+        // Eventos (igual)
         const filas = tbody.querySelectorAll(".fila-parte");
         filas.forEach(fila => {
             fila.addEventListener("click", (e) => {
-                // Si se hace click sobre un botón, no expandir
                 if (e.target.closest(".btn-editar, .btn-eliminar, .btn-estado")) return;
-
                 const detalle = fila.nextElementSibling;
-                if (detalle && detalle.classList.contains("fila-detalle")) {
-                    detalle.classList.toggle("hidden");
-                }
+                if (detalle) detalle.classList.toggle("hidden");
             });
         });
 
-        // Eventos de paginación
         document.getElementById("btn-prev")?.addEventListener("click", () => {
             if (page > 1) {
                 page--;
-                fetchAndRenderPartes();
+                fetchAndRenderPartes(); 
             }
         });
 
@@ -163,7 +161,6 @@ export async function fetchAndRenderPartes() {
             }
         });
 
-        // Evitar que los clics en botones expandan las filas
         section.querySelectorAll(".btn-editar, .btn-eliminar, .btn-estado").forEach(btn => {
             btn.addEventListener("click", e => e.stopPropagation());
         });
@@ -172,8 +169,10 @@ export async function fetchAndRenderPartes() {
         console.error("Error al obtener los partes:", error);
         tbody.innerHTML = `<tr><td colspan="7" class="text-red-500 text-center py-4">Error al conectar con el servidor.</td></tr>`;
     }
+
     renderControllerTabla();
 }
+
 
 export function renderControllerTabla() {
     const botonesEditar = document.querySelectorAll(".btn-editar");
