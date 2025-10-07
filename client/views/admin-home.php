@@ -20,14 +20,19 @@ if (!isset($_SESSION['usuario_id'])) {
     <link rel="icon" type="image/png" href="../img/logo.png">
     <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="../css/nav.css">
+    <link rel="stylesheet" href="../css/chart-barras.css">
+    <link rel="stylesheet" href="../css/chart-torta.css">
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Boxicons -->
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
 </head>
 
 <body>
+    
     <div id="nav"></div>
     <div id="panel"></div>
     <div id="main"></div>
@@ -36,7 +41,8 @@ if (!isset($_SESSION['usuario_id'])) {
     <script type="module" src="../controllers/controller-nav.js"></script>
     <script type="module" src="../controllers/controller-filtros.js"></script>
     <script type="module" src="../controllers/controller-tabla-partes.js"></script>
-    
+    <script type="module" src="../controllers/controller-filtros.js"></script>
+
 </body>
 
 </html>

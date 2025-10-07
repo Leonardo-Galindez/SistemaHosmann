@@ -8,7 +8,7 @@ export function crearTablaPartes() {
                     <tr>
                         <th class="px-4 py-3 text-center">Nro Parte</th>
                         <th class="px-4 py-3 text-center">Fecha</th>
-                        <th class="px-4 py-3 text-center">Cliente</th>
+                        <th class="px-4 py-3 text-center">Lugar</th>
                         <th class="px-4 py-3 text-center">Ejecutante</th>
                         <th class="px-4 py-3 text-center">Equipo</th>
                         <th class="px-4 py-3 text-center">Km Recorridos</th>
@@ -92,3 +92,36 @@ export function crearTablaClientes() {
         console.warn("No se encontró el contenedor #main para insertar la tabla.");
     }
 }
+
+
+export function crearTablaDashboard() {
+    const dashboardContainer = document.createElement("section");
+    dashboardContainer.id = "tabla-dashboard";
+    dashboardContainer.className = `
+        hidden 
+        bg-slate-800/60 
+        backdrop-blur-md 
+        rounded-lg 
+        p-4 
+        border 
+        border-white/10 
+        shadow 
+        grid 
+        gap-4 
+        sm:grid-cols-2 
+        lg:grid-cols-4
+    `;
+
+    // Este contenedor queda vacío para luego insertar los gráficos dinámicamente
+    dashboardContainer.innerHTML = `
+        <!-- Aquí se insertarán los 8 gráficos -->
+    `;
+
+    const mainContainer = document.getElementById("main");
+    if (mainContainer) {
+        mainContainer.appendChild(dashboardContainer);
+    } else {
+        console.warn("No se encontró el contenedor #main para insertar el dashboard.");
+    }
+}
+

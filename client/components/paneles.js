@@ -18,6 +18,7 @@ export function crearPanelPartes() {
         </div>
     `;
 
+    
     const panelContainer = document.getElementById("panel");
     if (panelContainer) {
         panelContainer.appendChild(panelPartes);
@@ -80,3 +81,23 @@ export function crearPanelClientes() {
     }
 }
 
+
+
+export function crearPanelDashboard() {
+    const panelDashboard = document.createElement("section");
+    panelDashboard.id = "panel-dashboard";
+    panelDashboard.className = "hidden bg-slate-800/60 backdrop-blur-md rounded-lg p-4 border border-white/10 shadow";
+
+    panelDashboard.innerHTML = `
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+            <h1 class="text-xl font-semibold text-white">Dashboard Gerencial</h1>
+        </div>
+    `;
+
+    const panelContainer = document.getElementById("panel");
+    if (panelContainer) {
+        panelContainer.appendChild(panelDashboard);
+    } else {
+        console.warn(" No se encontró el contenedor #panel para insertar el panel de clientes.");
+    }
+}

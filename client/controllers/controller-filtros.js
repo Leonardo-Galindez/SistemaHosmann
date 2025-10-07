@@ -48,17 +48,14 @@ function asignarAccionesFiltros(formFiltros) {
         cerrarFiltros();
     });
 
-
-    // Botón limpiar → restaura la tabla completa sin filtros
     btnLimpiar.addEventListener("click", async () => {
 
         formFiltros.querySelector("#filtro-cliente").value = "";
         formFiltros.querySelector("#filtro-estado").value = "";
         formFiltros.querySelector("#filtro-fecha-inicio").value = "";
         formFiltros.querySelector("#filtro-fecha-fin").value = "";
-        
-    });
 
+    });
 
     btnCancelar.addEventListener("click", cerrarFiltros);
     btnCerrar.addEventListener("click", cerrarFiltros);

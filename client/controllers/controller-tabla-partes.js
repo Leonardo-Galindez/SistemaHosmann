@@ -3,6 +3,7 @@ import { crearFormPartes } from "../components/forms.js";
 export let page = 1;
 export const limit = 10;
 let filtrosActivos = {};
+export let partesActuales = [];
 
 function escapeHTML(str) {
     if (str === null || str === undefined) return "-";
@@ -19,7 +20,7 @@ export async function fetchAndRenderPartes(filtros = {}) {
 
     if (Object.keys(filtros).length > 0) {
         filtrosActivos = filtros;
-        page = 1; // 🔹 siempre volver a la primera página al aplicar filtros
+        page = 1;
     }
 
     // usamos los filtros activos (aunque no vengan nuevos)
@@ -55,12 +56,12 @@ export async function fetchAndRenderPartes(filtros = {}) {
         }
 
         const partes = result.data;
+        partesActuales = partes;
         if (!partes || partes.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-white text-center py-4">No hay partes registrados.</td></tr>`;
             return;
         }
 
-        // 🔹 Renderizamos las filas igual que antes
         tbody.innerHTML = partes.map((p) => {
             let estadoColor = "bg-yellow-600 hover:bg-yellow-700";
             let iconoColor = "text-yellow-400";
@@ -76,7 +77,7 @@ export async function fetchAndRenderPartes(filtros = {}) {
             <tr class="fila-parte cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${escapeHTML(p.nroParte)}">
                 <td class="px-4 py-2 text-center">${escapeHTML(p.nroParte)}</td>
                 <td class="px-4 py-2 text-center">${escapeHTML(p.fecha_formateada ?? p.fecha)}</td>
-                <td class="px-4 py-2 text-center">${escapeHTML(p.cliente)}</td>
+                <td class="px-4 py-2 text-center">${escapeHTML(p.lugar)}</td>
                 <td class="px-4 py-2 text-center">${escapeHTML(p.ejecutante)}</td>
                 <td class="px-4 py-2 text-center">${escapeHTML(p.equipo)}</td>
                 <td class="px-4 py-2 text-center">${escapeHTML(p.kmRecorridos ?? 0)}</td>
@@ -104,7 +105,7 @@ export async function fetchAndRenderPartes(filtros = {}) {
                         <p><b>Litros Gasoil:</b> ${escapeHTML(p.ltsgasoil ?? 0)}</p>
                         <p><b>Cantidad Viajes:</b> ${escapeHTML(p.cantidadViajes ?? 0)}</p>
                         <p><b>Día:</b> ${escapeHTML(p.dia)}</p>
-                        <p><b>Lugar:</b> ${escapeHTML(p.lugar)}</p>
+                        <p><b>Cliente:</b> ${escapeHTML(p.cliente)}</p>
                         <p><b>Descripción:</b> ${escapeHTML(p.descripcion)}</p>
                         <p><b>Hora Inicio:</b> ${escapeHTML(p.horaInicio)}</p>
                         <p><b>Hora Fin:</b> ${escapeHTML(p.horaFin)}</p>

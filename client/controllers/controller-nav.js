@@ -1,4 +1,4 @@
-// controller/controller-nav.js
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Función para mostrar una sección y ocultar las demás
@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const secciones = [
             { panel: 'panel-partes', tabla: 'tabla-partes' },
             { panel: 'panel-clientes', tabla: 'tabla-clientes' },
-            { panel: 'panel-usuarios', tabla: 'tabla-usuarios' }
+            { panel: 'panel-usuarios', tabla: 'tabla-usuarios' },
+            { panel: 'panel-dashboard', tabla: 'tabla-dashboard' }
+
         ];
 
         // Ocultar todas las secciones
@@ -42,6 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target.closest('a[href="#usuarios"]')) {
             event.preventDefault();
             mostrarSeccion('usuarios');
+        }
+
+        if (target.closest('a[href="#dashboard"]')) {
+            event.preventDefault();
+            mostrarSeccion('dashboard');
         }
     });
 
