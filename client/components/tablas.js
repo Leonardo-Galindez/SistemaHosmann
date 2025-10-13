@@ -98,25 +98,44 @@ export function crearTablaDashboard() {
     const dashboardContainer = document.createElement("section");
     dashboardContainer.id = "tabla-dashboard";
     dashboardContainer.className = `
-        hidden 
-        bg-slate-800/60 
-        backdrop-blur-md 
-        rounded-lg 
-        p-4 
-        border 
-        border-white/10 
-        shadow 
-        grid 
-        gap-4 
-        sm:grid-cols-2 
-        lg:grid-cols-4
-    `;
+    hidden
+    bg-slate-800/60 
+    backdrop-blur-md 
+    rounded-xl 
+    p-6 
+    border border-white/10 
+    shadow-2xl 
+    flex 
+    flex-col 
+    gap-6 
+    w-full
+  `;
 
-    // Este contenedor queda vacío para luego insertar los gráficos dinámicamente
-    dashboardContainer.innerHTML = `
-        <!-- Aquí se insertarán los 8 gráficos -->
-    `;
+    // 🟨 Contenedor de velocímetros (3 en PC / 1 en móvil)
+    const filaVelocimetros = document.createElement("div");
+    filaVelocimetros.id = "fila-velocimetros";
+    filaVelocimetros.className = `
+    grid 
+    grid-cols-1 md:grid-cols-3 
+    gap-6 
+    w-full
+  `;
 
+    // 🟩 Contenedor de gráficos secundarios (2 en PC / 1 en móvil)
+    const filaSecundaria = document.createElement("div");
+    filaSecundaria.id = "fila-secundaria";
+    filaSecundaria.className = `
+    grid 
+    grid-cols-1 md:grid-cols-2 
+    gap-6 
+    w-full
+  `;
+
+    // 🔹 Insertamos ambos al dashboard principal
+    dashboardContainer.appendChild(filaVelocimetros);
+    dashboardContainer.appendChild(filaSecundaria);
+
+    // 🧩 Finalmente, lo insertamos al main
     const mainContainer = document.getElementById("main");
     if (mainContainer) {
         mainContainer.appendChild(dashboardContainer);

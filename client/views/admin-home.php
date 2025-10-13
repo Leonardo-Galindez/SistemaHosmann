@@ -29,19 +29,29 @@ if (!isset($_SESSION['usuario_id'])) {
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
+    <!-- ApexCharts (la única que necesitás para los velocímetros) -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Google Charts (si realmente lo usás en otros reportes, si no también podés quitarlo) -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+
+
+
+
 </head>
 
 <body>
-    
+
     <div id="nav"></div>
     <div id="panel"></div>
     <div id="main"></div>
     <div id="footer"></div>
     <script type="module" src="../controllers/render-admin.js"></script>
-    <script type="module" src="../controllers/controller-nav.js"></script>
-    <script type="module" src="../controllers/controller-filtros.js"></script>
     <script type="module" src="../controllers/controller-tabla-partes.js"></script>
     <script type="module" src="../controllers/controller-filtros.js"></script>
+    <script type="module" src="../controllers/controller-nav.js"></script>
 
 </body>
 

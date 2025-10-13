@@ -57,7 +57,7 @@ export function crearNavbar() {
             <a href="#usuarios" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
                 <i class='bx bx-user'></i> Usuarios
             </a>
-            <a href="#tablero" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+            <a href="#dashboard" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
                 <i class='bx bx-table'></i> Tablero
             </a>
             <a href="#" onclick="document.getElementById('logoutModal').classList.remove('hidden'); return false;" class="flex items-center gap-2 px-3 py-2 text-red-400 border border-red-500/50 rounded-md hover:text-red-200 hover:bg-red-600/20 transition">

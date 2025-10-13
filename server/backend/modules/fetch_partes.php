@@ -13,8 +13,8 @@ $offset = ($page - 1) * $limit;
 
 $cliente = isset($_GET['cliente']) ? trim($_GET['cliente']) : '';
 $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
-$fechaInicio = isset($_GET['fecha_inicio']) ? $_GET['fecha_inicio'] : '';
-$fechaFin = isset($_GET['fecha_fin']) ? $_GET['fecha_fin'] : '';
+$fechaInicio = isset($_GET['fechaInicio']) ? $_GET['fechaInicio'] : '';
+$fechaFin = isset($_GET['fechaFin']) ? $_GET['fechaFin'] : '';
 
 try {
     $usuario = $_SESSION['usuario']['tipo'] ?? 'desconocido';
@@ -33,15 +33,18 @@ try {
         $parametros[':estado'] = $estado;
     }
 
-    if (!empty($fechaInicio)) {
+    if (!empty($fechaInicio) && !empty($fechaFin)) {
+        $filtros[] = "fecha BETWEEN :fechaInicio AND :fechaFin";
+        $parametros[':fechaInicio'] = $fechaInicio;
+        $parametros[':fechaFin'] = $fechaFin;
+    } elseif (!empty($fechaInicio)) {
         $filtros[] = "fecha >= :fechaInicio";
         $parametros[':fechaInicio'] = $fechaInicio;
-    }
-
-    if (!empty($fechaFin)) {
+    } elseif (!empty($fechaFin)) {
         $filtros[] = "fecha <= :fechaFin";
         $parametros[':fechaFin'] = $fechaFin;
     }
+
 
     $whereClause = count($filtros) > 0 ? 'WHERE ' . implode(' AND ', $filtros) : '';
 

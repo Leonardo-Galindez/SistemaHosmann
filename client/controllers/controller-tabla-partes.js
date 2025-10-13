@@ -17,18 +17,14 @@ function escapeHTML(str) {
 }
 
 export async function fetchAndRenderPartes(filtros = {}) {
-
     if (Object.keys(filtros).length > 0) {
         filtrosActivos = filtros;
         page = 1;
     }
 
-    // usamos los filtros activos (aunque no vengan nuevos)
     const { cliente = "", estado = "", fechaInicio = "", fechaFin = "" } = filtrosActivos;
-
     const params = new URLSearchParams({ page, limit });
 
-    // Agregamos los filtros al query solo si tienen valor
     if (cliente) params.append("cliente", cliente);
     if (estado) params.append("estado", estado);
     if (fechaInicio) params.append("fechaInicio", fechaInicio);
@@ -94,6 +90,13 @@ export async function fetchAndRenderPartes(filtros = {}) {
                                 title="Cambiar estado">
                             <i class='bx bx-check-shield ${iconoColor}'></i>
                         </button>
+                        ${
+                            p.pdf
+                                ? `<button class="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition flex items-center btn-ver-pdf" data-id="${escapeHTML(p.idRespuesta)}" title="Ver PDF">
+                                        <i class='bx bx-file'></i>
+                                   </button>`
+                                : ""
+                        }
                     </div>
                 </td>
             </tr>
@@ -121,40 +124,38 @@ export async function fetchAndRenderPartes(filtros = {}) {
             `;
         }).join("");
 
-        // Paginación igual que antes
+        // --- Paginación ---
         section.querySelector(".paginacion")?.remove();
         const paginacionHTML = `
             <div class="paginacion flex justify-center items-center gap-4 mt-4">
-                <button id="btn-prev" 
-                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page <= 1 ? "opacity-50 cursor-not-allowed" : ""}">
+                <button id="btn-prev" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page <= 1 ? "opacity-50 cursor-not-allowed" : ""}">
                     Anterior
                 </button>
                 <span class="text-white text-sm">Página ${result.currentPage} de ${result.totalPages}</span>
-                <button id="btn-next" 
-                    class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page >= result.totalPages ? "opacity-50 cursor-not-allowed" : ""}">
+                <button id="btn-next" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${page >= result.totalPages ? "opacity-50 cursor-not-allowed" : ""}">
                     Siguiente
                 </button>
             </div>
         `;
         section.insertAdjacentHTML("beforeend", paginacionHTML);
 
-        // Eventos (igual)
+        // --- Mostrar/ocultar detalles ---
         const filas = tbody.querySelectorAll(".fila-parte");
         filas.forEach(fila => {
             fila.addEventListener("click", (e) => {
-                if (e.target.closest(".btn-editar, .btn-eliminar, .btn-estado")) return;
+                if (e.target.closest(".btn-editar, .btn-eliminar, .btn-estado, .btn-ver-pdf")) return;
                 const detalle = fila.nextElementSibling;
                 if (detalle) detalle.classList.toggle("hidden");
             });
         });
 
+        // --- Paginación eventos ---
         document.getElementById("btn-prev")?.addEventListener("click", () => {
             if (page > 1) {
                 page--;
-                fetchAndRenderPartes(); 
+                fetchAndRenderPartes();
             }
         });
-
         document.getElementById("btn-next")?.addEventListener("click", () => {
             if (page < result.totalPages) {
                 page++;
@@ -162,9 +163,58 @@ export async function fetchAndRenderPartes(filtros = {}) {
             }
         });
 
-        section.querySelectorAll(".btn-editar, .btn-eliminar, .btn-estado").forEach(btn => {
-            btn.addEventListener("click", e => e.stopPropagation());
+        // --- Evitar propagación en botones ---
+        section.querySelectorAll(".btn-editar, .btn-eliminar, .btn-estado, .btn-ver-pdf")
+            .forEach(btn => btn.addEventListener("click", e => e.stopPropagation()));
+
+        // === Ver PDF ===
+        section.querySelectorAll(".btn-ver-pdf").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const idRespuesta = btn.dataset.id;
+                console.log("Ver PDF para ID Respuesta:", idRespuesta);
+                try {
+                    const res = await fetch(`https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_archivo.php?idRespuesta=${idRespuesta}`);
+                    const data = await res.json();
+
+                    if (!data.success) {
+                        alert(data.message || "No se encontró el archivo PDF.");
+                        return;
+                    }
+
+                    mostrarModalPDF(data.url, data.nombreArchivo);
+                } catch (err) {
+                    console.error("Error al obtener PDF:", err);
+                    alert("Error al obtener el archivo PDF.");
+                }
+            });
         });
+
+        // === Función para mostrar el modal PDF ===
+        function mostrarModalPDF(url, nombreArchivo) {
+            const modal = document.createElement("div");
+            modal.className = "fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50";
+
+            modal.innerHTML = `
+                <div class="bg-slate-800 rounded-xl shadow-lg border border-white/10 w-[90%] md:w-[70%] h-[80%] flex flex-col">
+                    <div class="flex justify-between items-center px-4 py-2 border-b border-white/10">
+                        <h2 class="text-lg text-white font-semibold">Archivo: ${nombreArchivo}</h2>
+                        <button class="text-white hover:text-red-400 text-xl font-bold" id="cerrar-modal-pdf">&times;</button>
+                    </div>
+                    <div class="flex-1 bg-slate-900 overflow-hidden">
+                        <iframe src="${url}" class="w-full h-full rounded-b-xl" frameborder="0"></iframe>
+                    </div>
+                    <div class="p-3 flex justify-end bg-slate-900 border-t border-white/10">
+                        <a href="${url}" download="${nombreArchivo}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-semibold transition">
+                            Descargar PDF
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            document.getElementById("cerrar-modal-pdf").addEventListener("click", () => modal.remove());
+        }
 
     } catch (error) {
         console.error("Error al obtener los partes:", error);

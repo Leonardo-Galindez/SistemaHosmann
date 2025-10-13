@@ -6,7 +6,6 @@ header('Content-Type: application/json; charset=utf-8');
 try {
     $anio = isset($_GET['anio']) ? (int) $_GET['anio'] : date('Y');
 
-    // Consulta principal
     $query = "
         SELECT 
             MONTH(fecha) AS mes_num,
@@ -39,33 +38,24 @@ try {
     $stmt->execute();
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Nombres de los meses
     $mesesNombres = [
         1 => "Enero", 2 => "Febrero", 3 => "Marzo", 4 => "Abril",
         5 => "Mayo", 6 => "Junio", 7 => "Julio", 8 => "Agosto",
         9 => "Septiembre", 10 => "Octubre", 11 => "Noviembre", 12 => "Diciembre"
     ];
 
-    // Inicializar estructura base
     $data = [];
     foreach ($mesesNombres as $num => $nombre) {
-        $data[$num] = [
-            "mes" => $nombre,
-            "Viales" => 0,
-            "Pesados" => 0,
-            "Livianos" => 0
-        ];
+        $data[$num] = ["mes" => $nombre, "Viales" => 0, "Pesados" => 0, "Livianos" => 0];
     }
 
-    // Calcular huella de carbono (kg CO₂)
     foreach ($resultados as $fila) {
         $mes = (int) $fila['mes_num'];
         $categoria = $fila['categoria'];
-        $totalLitros = (float) $fila['total_gasoil'];
-        $huellaCO2 = $totalLitros * 2.5; // 💨 Conversión a kg CO₂
+        $total = (float) $fila['total_gasoil'];
 
         if (isset($data[$mes][$categoria])) {
-            $data[$mes][$categoria] += $huellaCO2;
+            $data[$mes][$categoria] += $total;
         }
     }
 
@@ -74,7 +64,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Error al calcular la huella de carbono: ' . $e->getMessage()
+        'message' => 'Error al obtener el consumo de gasoil: ' . $e->getMessage()
     ]);
     exit;
 }

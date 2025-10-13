@@ -175,33 +175,28 @@ export function crearFormUsuario() {
             <div class="overflow-y-auto p-4 sm:p-6 grid grid-cols-1 gap-4 sm:gap-6 text-sm text-white">
 
                 <div>
-                    <label class="block mb-1 text-slate-300">ID</label>
-                    <input type="text" class="input" />
-                </div>
-
-                <div>
                     <label class="block mb-1 text-slate-300">Nombre</label>
-                    <input type="text" class="input" required />
+                    <input type="text" name="nombre" class="input" required />
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-300">Apellido</label>
-                    <input type="text" class="input" required />
+                    <input type="text" name="apellido" class="input" required />
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-300">Teléfono</label>
-                    <input type="tel" class="input" />
+                    <input type="tel" name="telefono" class="input" />
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-300">Correo</label>
-                    <input type="email" class="input" required />
+                    <input type="email" name="correo" class="input" required />
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-300">Contraseña</label>
-                    <input type="password" id="password" class="input" required />
+                    <input type="password" name="password" id="password" class="input" required />
                 </div>
 
                 <div>
@@ -212,9 +207,11 @@ export function crearFormUsuario() {
 
                 <div>
                     <label class="block mb-1 text-slate-300">Tipo de Usuario</label>
-                    <select class="input" required>
+                    <select name="tipo" class="input" required>
                         <option value="">Seleccione un tipo</option>
                         <option value="admin">Admin</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="administracion">Administracion</option>
                         <option value="cliente">Cliente</option>
                     </select>
                 </div>
@@ -251,7 +248,6 @@ export function crearFormUsuario() {
     `;
     section.appendChild(style);
 
-    // ---- Validación de contraseñas ----
     section.addEventListener("submit", (e) => {
         const pass = section.querySelector("#password").value;
         const pass2 = section.querySelector("#password2").value;
@@ -267,6 +263,7 @@ export function crearFormUsuario() {
 
     return section;
 }
+
 
 export function crearFormCliente() {
     const section = document.createElement("form");
