@@ -15,7 +15,7 @@ $correo = isset($_GET['correo']) ? trim($_GET['correo']) : '';
 $tipo = isset($_GET['tipo']) ? trim($_GET['tipo']) : '';
 
 try {
-    $usuarioSesion = $_SESSION['usuario']['tipo'] ?? 'desconocido';
+    $usuario = strtolower(trim( $_SESSION['usuario_tipo'] ?? 'desconocido'));
 
     // --- Construcción dinámica de filtros ---
     $filtros = [];
@@ -31,7 +31,9 @@ try {
         $parametros[':correo'] = "%$correo%";
     }
 
-    if (!empty($tipo)) {
+    if ($usuario === 'administracion') {
+        $filtros[] = "tipo = 'administracion' OR tipo = 'cliente'";
+    } elseif (!empty($tipo)) {
         $filtros[] = "tipo = :tipo";
         $parametros[':tipo'] = $tipo;
     }

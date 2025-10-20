@@ -35,11 +35,6 @@ if (!isset($_SESSION['usuario_id'])) {
     <!-- Google Charts (si realmente lo usás en otros reportes, si no también podés quitarlo) -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-
-
-
-
-
 </head>
 
 <body>

@@ -42,8 +42,12 @@ export async function fetchAndRenderPartes(filtros = {}) {
         tbody.innerHTML = `<tr><td colspan="7" class="text-center text-white py-4">Cargando...</td></tr>`;
 
         const response = await fetch(
-            `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_partes.php?${params.toString()}`
+            `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_partes.php?${params.toString()}`,
+            {
+                credentials: 'include'
+            }
         );
+
         const result = await response.json();
 
         if (!result.success) {
@@ -52,7 +56,10 @@ export async function fetchAndRenderPartes(filtros = {}) {
         }
 
         const partes = result.data;
+        const usuario = result.user?.toLowerCase() ?? "desconocido"; // 🔍 tipo de usuario
+        const esAdmin = usuario === "administracion"; // 🔒 detectar tipo admin
         partesActuales = partes;
+
         if (!partes || partes.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" class="text-white text-center py-4">No hay partes registrados.</td></tr>`;
             return;
@@ -69,6 +76,33 @@ export async function fetchAndRenderPartes(filtros = {}) {
                 iconoColor = "text-red-400";
             }
 
+            // --- Botones según tipo de usuario ---
+            let botonesHTML = "";
+            if (!esAdmin) {
+                botonesHTML += `
+                    <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar" title="Editar">
+                        <i class='bx bx-pencil'></i>
+                    </button>
+                    <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar" title="Eliminar">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                    <button class="px-2 py-1 text-xs rounded text-white transition flex items-center btn-estado ${estadoColor}" 
+                            data-estado="${escapeHTML(p.estado ?? 'PENDIENTE')}"
+                            title="Cambiar estado">
+                        <i class='bx bx-check-shield ${iconoColor}'></i>
+                    </button>
+                `;
+            }
+
+            // --- Botón Ver PDF (siempre visible) ---
+            if (p.pdf) {
+                botonesHTML += `
+                    <button class="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition flex items-center btn-ver-pdf" data-id="${escapeHTML(p.idRespuesta)}" title="Ver PDF">
+                        <i class='bx bx-file'></i>
+                    </button>
+                `;
+            }
+
             return `
             <tr class="fila-parte cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${escapeHTML(p.nroParte)}">
                 <td class="px-4 py-2 text-center">${escapeHTML(p.nroParte)}</td>
@@ -79,24 +113,7 @@ export async function fetchAndRenderPartes(filtros = {}) {
                 <td class="px-4 py-2 text-center">${escapeHTML(p.kmRecorridos ?? 0)}</td>
                 <td class="px-4 py-2">
                     <div class="flex justify-center gap-2 acciones">
-                        <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar" title="Editar">
-                            <i class='bx bx-pencil'></i>
-                        </button>
-                        <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar" title="Eliminar">
-                            <i class='bx bx-trash'></i>
-                        </button>
-                        <button class="px-2 py-1 text-xs rounded text-white transition flex items-center btn-estado ${estadoColor}" 
-                                data-estado="${escapeHTML(p.estado ?? 'PENDIENTE')}"
-                                title="Cambiar estado">
-                            <i class='bx bx-check-shield ${iconoColor}'></i>
-                        </button>
-                        ${
-                            p.pdf
-                                ? `<button class="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition flex items-center btn-ver-pdf" data-id="${escapeHTML(p.idRespuesta)}" title="Ver PDF">
-                                        <i class='bx bx-file'></i>
-                                   </button>`
-                                : ""
-                        }
+                        ${botonesHTML}
                     </div>
                 </td>
             </tr>
@@ -223,6 +240,7 @@ export async function fetchAndRenderPartes(filtros = {}) {
 
     renderControllerTabla();
 }
+
 
 
 export function renderControllerTabla() {
@@ -361,8 +379,11 @@ function abrirFormulario(remitoId = null) {
     document.body.appendChild(modal);
 
     asignarAccionesFormulario(formRemito);
+
     if (remitoId) {
-        fetch_parte(remitoId);
+        mostrarLoader("Cargando datos del parte...");
+        fetch_parte(remitoId)
+            .finally(() => ocultarLoader());
     }
 }
 
@@ -531,8 +552,34 @@ export async function fetch_parte(remitoId) {
     }
 }
 
+function mostrarLoader(mensaje = "Procesando...") {
+    if (document.getElementById("loader-overlay")) return; // evita duplicados
+
+    const loader = document.createElement("div");
+    loader.id = "loader-overlay";
+    loader.innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="flex flex-col items-center">
+                <div class="loader-circle w-12 h-12 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
+                <p class="text-white font-medium mt-3">${mensaje}</p>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(loader);
+}
+
+// 🔹 Oculta el loader
+function ocultarLoader() {
+    const loader = document.getElementById("loader-overlay");
+    if (loader) loader.remove();
+}
+
+// 🔹 Tu función principal con loader integrado
 export async function actualizarParte(form) {
     try {
+        // Mostrar loader al comenzar la actualización
+        mostrarLoader("Actualizando parte...");
+
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
@@ -544,9 +591,11 @@ export async function actualizarParte(form) {
 
         const result = await response.json();
 
+        // Ocultar loader cuando llega respuesta
+        ocultarLoader();
+
         if (result.success) {
             cerrarFormulario();
-
 
             const aviso = document.createElement("div");
             aviso.className = "fixed bottom-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg animate-fadeIn";
@@ -555,7 +604,6 @@ export async function actualizarParte(form) {
             setTimeout(() => aviso.remove(), 2500);
 
         } else {
-
             const avisoError = document.createElement("div");
             avisoError.className = "fixed bottom-5 right-5 bg-red-600 text-white px-4 py-2 rounded shadow-lg animate-fadeIn";
             avisoError.textContent = "❌ Error al actualizar: " + (result.error || "Intenta nuevamente");
@@ -565,9 +613,9 @@ export async function actualizarParte(form) {
             console.error(result);
         }
     } catch (error) {
+        ocultarLoader(); // asegúrate de quitar el loader si hay error
         console.error("Error al enviar actualización:", error);
 
-        // ⚠️ Error inesperado
         const avisoError = document.createElement("div");
         avisoError.className = "fixed bottom-5 right-5 bg-yellow-600 text-white px-4 py-2 rounded shadow-lg animate-fadeIn";
         avisoError.textContent = "⚠️ Error inesperado al actualizar el parte.";

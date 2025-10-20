@@ -7,6 +7,7 @@ import { renderControllerFiltros } from "./controller-filtros.js";
 import { renderControllerDescargar } from "./controller-reporte.js";
 import { renderControllerUsuarios } from "./controller-usuarios.js";
 import { fetchAndRenderUsuarios } from "./controller-tabla-usuarios.js";
+import { fetchAndRenderClientes } from "./controller-tabla-clientes.js";
 import {
     crearComponenteChartGasoil,
     crearComponenteChartHuellaTorta,
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderControllerFiltros();
     fetchAndRenderPartes();
     fetchAndRenderUsuarios();
+    fetchAndRenderClientes();
     renderControllerDescargar();
 
 

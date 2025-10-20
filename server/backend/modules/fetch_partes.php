@@ -4,12 +4,9 @@ session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
-
-
 $page = max(1, (int) ($_GET['page'] ?? 1));
 $limit = max(1, min(100, (int) ($_GET['limit'] ?? 10)));
 $offset = ($page - 1) * $limit;
-
 
 $cliente = isset($_GET['cliente']) ? trim($_GET['cliente']) : '';
 $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
@@ -17,7 +14,8 @@ $fechaInicio = isset($_GET['fechaInicio']) ? $_GET['fechaInicio'] : '';
 $fechaFin = isset($_GET['fechaFin']) ? $_GET['fechaFin'] : '';
 
 try {
-    $usuario = $_SESSION['usuario']['tipo'] ?? 'desconocido';
+    // --- Obtener usuario logueado ---
+   $usuario = strtolower(trim( $_SESSION['usuario_tipo'] ?? 'desconocido'));
 
     // --- Construcción dinámica de filtros ---
     $filtros = [];
@@ -28,7 +26,10 @@ try {
         $parametros[':cliente'] = "%$cliente%";
     }
 
-    if (!empty($estado)) {
+    // 🔒 Si es usuario de tipo administración, fuerza mostrar solo APROBADOS
+    if ($usuario === 'administracion') {
+        $filtros[] = "estado = 'APROBADO'";
+    } elseif (!empty($estado)) {
         $filtros[] = "estado = :estado";
         $parametros[':estado'] = $estado;
     }
@@ -44,7 +45,6 @@ try {
         $filtros[] = "fecha <= :fechaFin";
         $parametros[':fechaFin'] = $fechaFin;
     }
-
 
     $whereClause = count($filtros) > 0 ? 'WHERE ' . implode(' AND ', $filtros) : '';
 
@@ -99,7 +99,7 @@ try {
 
     $partes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // --- Conteo total para paginación ---
+    // --- Conteo total ---
     $countQuery = "SELECT COUNT(*) AS total FROM parte $whereClause";
     $countStmt = $pdo->prepare($countQuery);
     foreach ($parametros as $key => $val) {
@@ -109,7 +109,6 @@ try {
     $totalCount = (int) $countStmt->fetchColumn();
     $totalPages = ($totalCount > 0) ? ceil($totalCount / $limit) : 1;
 
-    // --- Respuesta JSON ---
     echo json_encode([
         'success' => true,
         'data' => $partes,
@@ -121,6 +120,7 @@ try {
 
 } catch (PDOException $e) {
     http_response_code(500);
+    error_log("Error en fetch_partes.php: " . $e->getMessage());
     echo json_encode([
         'success' => false,
         'message' => 'Error al obtener los partes: ' . $e->getMessage()

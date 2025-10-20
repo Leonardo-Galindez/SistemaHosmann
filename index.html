@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medimart - Tu Salud Primero</title>
+  <style>
+    /* ----------------------------
+       RESET Y BASE
+    ----------------------------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      scroll-behavior: smooth;
+    }
+    img { max-width: 100%; display: block; }
+
+    h1, h2, h3 {
+      font-weight: 600;
+      color: #0a2942;
+    }
+    p {
+      color: #555;
+    }
+
+    /* ----------------------------
+       HEADER
+    ----------------------------- */
+    header {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar {
+      background: #0a2942;
+      color: #fff;
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 6px 10px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #0a2942;
+      font-weight: 500;
+      transition: color .3s;
+    }
+    nav a:hover {
+      color: #00bfa6;
+    }
+
+    /* ----------------------------
+       HERO
+    ----------------------------- */
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 80px 10%;
+      background: linear-gradient(135deg, #f0faf8 0%, #e6f3ff 100%);
+    }
+
+    .hero-content {
+      flex: 1 1 400px;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+    .hero button {
+      background: #00bfa6;
+      border: none;
+      padding: 12px 25px;
+      color: white;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .3s;
+    }
+    .hero button:hover {
+      background: #009f8b;
+    }
+
+    .hero img {
+      flex: 1 1 400px;
+      border-radius: 10px;
+    }
+
+    /* ----------------------------
+       SECCIONES GENERALES
+    ----------------------------- */
+    section {
+      padding: 70px 10%;
+      text-align: center;
+    }
+    section h2 {
+      font-size: 2rem;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    /* ----------------------------
+       SERVICIOS
+    ----------------------------- */
+    .service-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .service-cards .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform .3s;
+    }
+    .service-cards .card:hover {
+      transform: translateY(-5px);
+    }
+
+    /* ----------------------------
+       EQUIPO
+    ----------------------------- */
+    .team-members {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+    .team-members .member {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .team-members .member img {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 15px;
+      object-fit: cover;
+    }
+    .team-members h3 {
+      margin-bottom: 5px;
+    }
+
+    /* ----------------------------
+       PROCESO
+    ----------------------------- */
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .step {
+      width: 250px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .step span {
+      font-size: 2rem;
+      color: #00bfa6;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* ----------------------------
+       TESTIMONIOS
+    ----------------------------- */
+    .testimonials-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+    .testimonial {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-align: left;
+    }
+    .testimonial img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    /* ----------------------------
+       PRECIOS
+    ----------------------------- */
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+    .price-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .price-card .price {
+      display: block;
+      font-size: 2rem;
+      color: #00bfa6;
+      margin: 15px 0;
+    }
+    .price-card button {
+      background: #00bfa6;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .3s;
+    }
+    .price-card button:hover {
+      background: #009f8b;
+    }
+
+    /* ----------------------------
+       BLOG
+    ----------------------------- */
+    .blog-posts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+    .post {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      overflow: hidden;
+      text-align: left;
+    }
+    .post img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+    .post h3 {
+      padding: 15px;
+    }
+    .post p {
+      padding: 0 15px 15px;
+    }
+    .post a {
+      display: block;
+      padding: 10px 15px;
+      color: #00bfa6;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    /* ----------------------------
+       SUSCRIPCIÓN
+    ----------------------------- */
+    #subscribe {
+      background: linear-gradient(135deg, #00bfa6, #00a1b9);
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    #subscribe form {
+      margin-top: 20px;
+    }
+    #subscribe input {
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      width: 250px;
+      max-width: 80%;
+    }
+    #subscribe button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      background: white;
+      color: #00bfa6;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* ----------------------------
+       FOOTER
+    ----------------------------- */
+    footer {
+      background: #0a2942;
+      color: white;
+      padding: 60px 10% 20px;
+    }
+    .footer-sections {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    .footer-sections h3 {
+      margin-bottom: 10px;
+    }
+    .footer-sections a {
+      color: #ddd;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .footer-bottom {
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.2);
+      padding-top: 15px;
+      font-size: 0.9rem;
+    }
+
+    /* ----------------------------
+       RESPONSIVE
+    ----------------------------- */
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero img {
+        margin-top: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="top-bar">
+      Lunes - Viernes 8:00 - 18:00 / Domingo 8:00 - 14:00 · Tel: 0198-9526503
+    </div>
+    <nav>
+      <a href="#home">Inicio</a>
+      <a href="#services">Servicios</a>
+      <a href="#team">Equipo</a>
+      <a href="#pricing">Planes</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact">Contacto</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1>Cuida tu salud con los mejores profesionales</h1>
+      <p>En Medimart te ayudamos a mantener tu bienestar con atención médica de calidad, moderna y accesible.</p>
+      <button>Explorar servicios</button>
+    </div>
+    <img src="https://images.unsplash.com/photo-1588776814546-98d9d1b4f5a5?auto=format&fit=crop&w=800&q=80" alt="Doctor" />
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="services">
+    <h2>Nuestros Servicios</h2>
+    <div class="service-cards">
+      <div class="card"><h3>Consultas Médicas</h3><p>Atención personalizada con profesionales calificados.</p></div>
+      <div class="card"><h3>Emergencias</h3><p>Soporte inmediato para casos urgentes las 24 horas.</p></div>
+      <div class="card"><h3>Estudios Modernos</h3><p>Equipamiento tecnológico de última generación.</p></div>
+      <div class="card"><h3>Medicina Familiar</h3><p>Atención integral para todos los miembros de la familia.</p></div>
+    </div>
+  </section>
+
+  <!-- EQUIPO -->
+  <section id="team">
+    <h2>Nuestro Equipo</h2>
+    <div class="team-members">
+      <div class="member">
+        <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+        <h3>Dr. Marcos Black</h3>
+        <p>Cardiólogo</p>
+      </div>
+      <div class="member">
+        <img src="https://randomuser.me/api/portraits/women/2.jpg" alt="">
+        <h3>Dra. Laura Smith</h3>
+        <p>Clínica General</p>
+      </div>
+      <div class="member">
+        <img src="https://randomuser.me/api/portraits/men/3.jpg" alt="">
+        <h3>Dr. Alan White</h3>
+        <p>Pediatra</p>
+      </div>
+      <div class="member">
+        <img src="https://randomuser.me/api/portraits/women/4.jpg" alt="">
+        <h3>Dra. Ana Green</h3>
+        <p>Nutricionista</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESO -->
+  <section id="process">
+    <h2>Cómo Funciona</h2>
+    <div class="steps">
+      <div class="step"><span>01</span><h3>Agenda tu cita</h3><p>Elige la especialidad y horario que prefieras.</p></div>
+      <div class="step"><span>02</span><h3>Recibe atención</h3><p>Nuestros doctores te brindan un diagnóstico completo.</p></div>
+      <div class="step"><span>03</span><h3>Vive saludable</h3><p>Mejora tu calidad de vida con nuestros planes de salud.</p></div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section id="testimonials">
+    <h2>Opiniones de Nuestros Pacientes</h2>
+    <div class="testimonials-list">
+      <div class="testimonial">
+        <img src="https://randomuser.me/api/portraits/men/5.jpg" alt="">
+        <h3>Jorge Pérez</h3>
+        <p>Excelente atención, rápida y profesional. Muy recomendados.</p>
+      </div>
+      <div class="testimonial">
+        <img src="https://randomuser.me/api/portraits/women/6.jpg" alt="">
+        <h3>Lucía Gómez</h3>
+        <p>Me encantó la amabilidad del personal y la limpieza del lugar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRECIOS -->
+  <section id="pricing">
+    <h2>Planes de Atención Médica</h2>
+    <div class="pricing-cards">
+      <div class="price-card">
+        <h3>Consulta Básica</h3>
+        <span class="price">$49.99</span>
+        <p>Por cita</p>
+        <ul><li>Consulta de 30 minutos</li><li>Atención virtual o presencial</li></ul>
+        <button>Elegir plan</button>
+      </div>
+      <div class="price-card">
+        <h3>Plan Familiar</h3>
+        <span class="price">$99.99</span>
+        <p>Mensual</p>
+        <ul><li>Hasta 4 integrantes</li><li>Consultas ilimitadas</li></ul>
+        <button>Elegir plan</button>
+      </div>
+      <div class="price-card">
+        <h3>Plan Premium</h3>
+        <span class="price">$149.99</span>
+        <p>Mensual</p>
+        <ul><li>Estudios gratuitos</li><li>Atención preferencial</li></ul>
+        <button>Elegir plan</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section id="blog">
+    <h2>Últimos Artículos</h2>
+    <div class="blog-posts">
+      <div class="post">
+        <img src="https://images.unsplash.com/photo-1588774069263-6ed8e6c3a0a3?auto=format&fit=crop&w=800&q=80" alt="">
+        <h3>Cómo mejorar tu salud cardiovascular</h3>
+        <p>Descubre hábitos simples que fortalecen tu corazón.</p>
+        <a href="#">Leer más</a>
+      </div>
+      <div class="post">
+        <img src="https://images.unsplash.com/photo-1596204976717-1a9ffb33f869?auto=format&fit=crop&w=800&q=80" alt="">
+        <h3>Alimentos que fortalecen tu sistema inmunológico</h3>
+        <p>Guía práctica para mantenerte saludable todo el año.</p>
+        <a href="#">Leer más</a>
+      </div>
+      <div class="post">
+        <img src="https://images.unsplash.com/photo-1600051544006-13f4eae3b8dc?auto=format&fit=crop&w=800&q=80" alt="">
+        <h3>La importancia del sueño en la salud mental</h3>
+        <p>Cómo dormir bien puede cambiar tu vida.</p>
+        <a href="#">Leer más</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUSCRIPCIÓN -->
+  <section id="subscribe">
+    <h2>¡Suscribite a nuestras novedades!</h2>
+    <form>
+      <input type="email" placeholder="Tu correo electrónico" required />
+      <button>Suscribirme</button>
+    </form>
+    <p>Acepto la <a href="#" style="color:white;text-decoration:underline;">política de privacidad</a>.</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact">
+    <div class="footer-sections">
+      <div>
+        <h3>Enlaces Rápidos</h3>
+        <a href="#home">Inicio</a>
+        <a href="#services">Servicios</a>
+        <a href="#team">Equipo</a>
+        <a href="#contact">Contacto</a>
+      </div>
+      <div>
+        <h3>Legal</h3>
+        <a href="#">Política de Privacidad</a>
+        <a href="#">Términos y Condiciones</a>
+      </div>
+      <div>
+        <h3>Contacto</h3>
+        <p>📍 Av. Salud 123, Buenos Aires</p>
+        <p>📞 +54 11 5555-5555</p>
+        <p>✉️ info@medimart.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2025 Medimart. Todos los derechos reservados.</div>
+  </footer>
+
+  <script>
+    // Scroll suave
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>

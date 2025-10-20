@@ -1,59 +1,57 @@
-import { crearFormUpdateUsuario } from "../components/forms.js";
+import { crearFormUpdateCliente } from "../components/forms.js";
 
-let usuariosActuales = [];
-let pageUsuarios = 1;
-const limitUsuarios = 10;
+let clientesActuales = [];
+let pageClientes = 1;
+const limitClientes = 10;
 
-export async function fetchAndRenderUsuarios(filtros = {}) {
-    const { nombre = "", correo = "", tipo = "" } = filtros;
-    const params = new URLSearchParams({ page: pageUsuarios, limit: limitUsuarios });
+export async function fetchAndRenderClientes(filtros = {}) {
+    const { razonSocial = "" } = filtros;
+    const params = new URLSearchParams({ page: pageClientes, limit: limitClientes });
 
-    if (nombre) params.append("nombre", nombre);
-    if (correo) params.append("correo", correo);
-    if (tipo) params.append("tipo", tipo);
+    if (razonSocial) params.append("razonSocial", razonSocial);
 
-    const section = document.getElementById("tabla-usuarios");
-    const tbody = document.getElementById("tablaUsuarios");
+
+    const section = document.getElementById("tabla-clientes");
+    const tbody = document.getElementById("tablaClientes");
 
     if (!section || !tbody) {
-        console.error("No se encontró el contenedor de la tabla de usuarios.");
+        console.error("No se encontró el contenedor de la tabla de clientes.");
         return;
     }
 
     try {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-white py-4">Cargando usuarios...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-white py-4">Cargando clientes...</td></tr>`;
 
-        const response = await fetch(`https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_usuarios.php?${params.toString()}`);
+        const response = await fetch(`https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_clientes.php?${params.toString()}`);
         const result = await response.json();
 
         if (!result.success) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-red-500 text-center py-4">${escapeHTML(result.message ?? "Error al cargar los usuarios.")}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="text-red-500 text-center py-4">${escapeHTML(result.message ?? "Error al cargar los clientes.")}</td></tr>`;
             return;
         }
 
-        const usuarios = result.data;
-        usuariosActuales = usuarios;
+        const clientes = result.data;
+        clientesActuales = clientes;
 
-        if (!usuarios || usuarios.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-white text-center py-4">No hay usuarios registrados.</td></tr>`;
+        if (!clientes || clientes.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-white text-center py-4">No hay clientes registrados.</td></tr>`;
             return;
         }
 
         // === Renderizar filas ===
-        tbody.innerHTML = usuarios.map((u) => `
-            <tr class="cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${escapeHTML(u.id)}">
-                <td class="px-4 py-2 text-center">${escapeHTML(u.id)}</td>
-                <td class="px-4 py-2 text-center">${escapeHTML(u.nombre)}</td>
-                <td class="px-4 py-2 text-center">${escapeHTML(u.apellido)}</td>
-                <td class="px-4 py-2 text-center">${escapeHTML(u.telefono ?? "-")}</td>
-                <td class="px-4 py-2 text-center">${escapeHTML(u.correo)}</td>
-                <td class="px-4 py-2 text-center capitalize">${escapeHTML(u.tipo)}</td>
+        tbody.innerHTML = clientes.map((c) => `
+            <tr class="cursor-pointer odd:bg-slate-900/40 even:bg-slate-800/40 hover:bg-slate-700/40 transition border-b border-white/10" data-id="${escapeHTML(c.id)}">
+                <td class="px-4 py-2 text-center">${escapeHTML(c.id)}</td>
+                <td class="px-4 py-2 text-center">${escapeHTML(c.cuit)}</td>
+                <td class="px-4 py-2 text-center">${escapeHTML(c.razonSocial)}</td>
+                <td class="px-4 py-2 text-center">${escapeHTML(c.correo ?? "-")}</td>
+                <td class="px-4 py-2 text-center">${escapeHTML(c.direccion)}</td>
                 <td class="px-4 py-2">
                     <div class="flex justify-center gap-2">
-                        <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar-usuario" title="Editar usuario">
+                        <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar-cliente" title="Editar cliente">
                             <i class='bx bx-pencil'></i>
                         </button>
-                        <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar-usuario" title="Eliminar usuario">
+                        <button class="px-2 py-1 text-xs rounded bg-red-600 text-white hover:bg-red-700 transition flex items-center btn-eliminar-cliente" title="Eliminar cliente">
                             <i class='bx bx-trash'></i>
                         </button>
                     </div>
@@ -65,11 +63,11 @@ export async function fetchAndRenderUsuarios(filtros = {}) {
         section.querySelector(".paginacion")?.remove();
         const paginacionHTML = `
             <div class="paginacion flex justify-center items-center gap-4 mt-4">
-                <button id="btn-prev-user" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${pageUsuarios <= 1 ? "opacity-50 cursor-not-allowed" : ""}">
+                <button id="btn-prev-client" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${pageClientes <= 1 ? "opacity-50 cursor-not-allowed" : ""}">
                     Anterior
                 </button>
                 <span class="text-white text-sm">Página ${result.currentPage} de ${result.totalPages}</span>
-                <button id="btn-next-user" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${pageUsuarios >= result.totalPages ? "opacity-50 cursor-not-allowed" : ""}">
+                <button id="btn-next-client" class="bg-slate-700 px-3 py-1 rounded hover:bg-slate-600 ${pageClientes >= result.totalPages ? "opacity-50 cursor-not-allowed" : ""}">
                     Siguiente
                 </button>
             </div>
@@ -77,45 +75,45 @@ export async function fetchAndRenderUsuarios(filtros = {}) {
         section.insertAdjacentHTML("beforeend", paginacionHTML);
 
         // Controladores de paginación
-        document.getElementById("btn-prev-user")?.addEventListener("click", () => {
-            if (pageUsuarios > 1) {
-                pageUsuarios--;
-                fetchAndRenderUsuarios();
+        document.getElementById("btn-prev-client")?.addEventListener("click", () => {
+            if (pageClientes > 1) {
+                pageClientes--;
+                fetchAndRenderClientes();
             }
         });
 
-        document.getElementById("btn-next-user")?.addEventListener("click", () => {
-            if (pageUsuarios < result.totalPages) {
-                pageUsuarios++;
-                fetchAndRenderUsuarios();
+        document.getElementById("btn-next-client")?.addEventListener("click", () => {
+            if (pageClientes < result.totalPages) {
+                pageClientes++;
+                fetchAndRenderClientes();
             }
         });
 
         // Controladores de acción
-        renderControllerUsuarios();
+        renderControllerClientes();
 
     } catch (error) {
-        console.error("Error al obtener los usuarios:", error);
+        console.error("Error al obtener los clientes:", error);
         tbody.innerHTML = `<tr><td colspan="7" class="text-red-500 text-center py-4">Error al conectar con el servidor.</td></tr>`;
     }
 }
 
 
 // === Controladores de acciones ===
-export function renderControllerUsuarios() {
-    const botonesEditar = document.querySelectorAll(".btn-editar-usuario");
-    const botonesEliminar = document.querySelectorAll(".btn-eliminar-usuario");
+export function renderControllerClientes() {
+    const botonesEditar = document.querySelectorAll(".btn-editar-cliente");
+    const botonesEliminar = document.querySelectorAll(".btn-eliminar-cliente");
 
-    // === Editar usuario ===
+    // === Editar cliente ===
     botonesEditar.forEach(btn => {
         btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const id = btn.closest("tr").dataset.id;
-            if (id) updateUsuario(id);
+            if (id) updateCliente(id);
         });
     });
 
-    // === Eliminar usuario ===
+    // === Eliminar cliente ===
     botonesEliminar.forEach(btn => {
         btn.addEventListener("click", async (e) => {
             e.stopPropagation();
@@ -123,12 +121,12 @@ export function renderControllerUsuarios() {
             if (!id) return;
 
             // Abrir modal de confirmación
-            abrirConfirmacionEliminarUsuario(id);
+            abrirConfirmacionEliminarCliente(id);
         });
     });
 
     // === Modal de confirmación de eliminación ===
-    async function abrirConfirmacionEliminarUsuario(id) {
+    async function abrirConfirmacionEliminarCliente(id) {
         if (document.getElementById("confirmDeleteModal")) return;
 
         const confirmModal = document.createElement("div");
@@ -137,9 +135,9 @@ export function renderControllerUsuarios() {
 
         confirmModal.innerHTML = `
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg max-w-sm w-full animate-fadeIn">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Eliminar usuario</h2>
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Eliminar cliente</h2>
             <p class="text-gray-600 dark:text-gray-300 mb-6">
-                ¿Seguro que quieres eliminar el usuario con ID <b>${id}</b>? 
+                ¿Seguro que quieres eliminar el cliente con ID <b>${id}</b>? 
                 <br><span class="text-red-500 text-sm">Esta acción no se puede deshacer.</span>
             </p>
             <div class="flex justify-end gap-3">
@@ -168,7 +166,7 @@ export function renderControllerUsuarios() {
                 const formData = new FormData();
                 formData.append("id", id);
 
-                const response = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/delete_usuario.php", {
+                const response = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/delete_cliente.php", {
                     method: "POST",
                     body: formData
                 });
@@ -182,19 +180,19 @@ export function renderControllerUsuarios() {
                     // Mensaje visual de confirmación
                     const aviso = document.createElement("div");
                     aviso.className = "fixed bottom-5 right-5 bg-green-600 text-white px-4 py-2 rounded shadow-lg animate-fadeIn";
-                    aviso.textContent = "✅ Usuario eliminado correctamente";
+                    aviso.textContent = "✅ Cliente eliminado correctamente";
                     document.body.appendChild(aviso);
                     setTimeout(() => aviso.remove(), 2500);
 
                     // Refrescar lista (opcional)
-                    if (typeof fetchAndRenderUsuarios === "function") fetchAndRenderUsuarios();
+                    if (typeof fetchAndRenderClientes === "function") fetchAndRenderClientes();
 
                 } else {
-                    alert("⚠️ " + (result.message || "Error al eliminar usuario."));
+                    alert("⚠️ " + (result.message || "Error al eliminar cliente."));
                 }
 
             } catch (error) {
-                console.error("Error al eliminar usuario:", error);
+                console.error("Error al eliminar cliente:", error);
                 alert("⚠️ Error de conexión con el servidor.");
             }
         });
@@ -203,8 +201,8 @@ export function renderControllerUsuarios() {
 }
 
 
-// === Función auxiliar para evitar XSS ===
-function escapeHTML(str = "") {
+function escapeHTML(str) {
+    if (str === null || str === undefined) return "";
     return str
         .toString()
         .replace(/[&<>'"]/g, (tag) => ({
@@ -215,6 +213,7 @@ function escapeHTML(str = "") {
             '"': "&quot;"
         }[tag]));
 }
+
 
 function mostrarAviso(tipo = "info", mensaje = "") {
     const colores = {
@@ -230,35 +229,35 @@ function mostrarAviso(tipo = "info", mensaje = "") {
     setTimeout(() => aviso.remove(), 3000);
 }
 
-export async function updateUsuario(id) {
+export async function updateCliente(id) {
     try {
-        mostrarLoader("Cargando datos del usuario...");
+        mostrarLoader("Cargando datos del cliente...");
 
-        const res = await fetch(`https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_usuario.php?id=${id}`);
+        const res = await fetch(`https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_cliente.php?id=${id}`);
         const data = await res.json();
 
         ocultarLoader();
 
         if (!data.success) {
-            mostrarAviso("error", "❌ Error al cargar datos del usuario.");
+            mostrarAviso("error", "❌ Error al cargar datos del cliente.");
             return;
         }
 
-        const usuario = data.usuario;
-        const form = crearFormUpdateUsuario();
+        const cliente = data.cliente;
+        const form = crearFormUpdateCliente();
 
         document.body.appendChild(form);
 
         // Precargar valores en el formulario
-        form.querySelector("#usuario-id").value = usuario.id;
-        form.querySelector("#usuario-nombre").value = usuario.nombre;
-        form.querySelector("#usuario-apellido").value = usuario.apellido;
-        form.querySelector("#usuario-telefono").value = usuario.telefono || "";
-        form.querySelector("#usuario-correo").value = usuario.correo;
-        form.querySelector("#usuario-tipo").value = usuario.tipo;
+        form.querySelector("#cliente-id").value = cliente.id;
+        form.querySelector("#cliente-razonSocial").value = cliente.razonSocial;
+        form.querySelector("#cliente-cuit").value = cliente.cuit;
+        form.querySelector("#cliente-correo").value = cliente.correo || "";
+        form.querySelector("#cliente-direccion").value = cliente.direccion;
+
 
         // === Botones de cerrar / cancelar ===
-        const btnCerrar = form.querySelector("#cerrar-form-usuario");
+        const btnCerrar = form.querySelector("#cerrar-form-cliente");
         const btnCancelar = form.querySelector("#cancelar-update");
 
         btnCerrar.addEventListener("click", (e) => {
@@ -274,23 +273,13 @@ export async function updateUsuario(id) {
         // === Envío del formulario ===
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const pass = form.querySelector("#password").value;
-            const pass2 = form.querySelector("#password2").value;
-            const error = form.querySelector("#password-error");
-
-            if (pass !== pass2) {
-                error.classList.remove("hidden");
-                return;
-            } else {
-                error.classList.add("hidden");
-            }
 
             const formData = new FormData(form);
 
             try {
-                mostrarLoader("Actualizando usuario...");
+                mostrarLoader("Actualizando cliente...");
 
-                const response = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/update_usuario.php", {
+                const response = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/update_cliente.php", {
                     method: "POST",
                     body: formData
                 });
@@ -301,10 +290,10 @@ export async function updateUsuario(id) {
 
                 if (result.success) {
                     form.remove();
-                    fetchAndRenderUsuarios();
-                    mostrarAviso("success", "✅ Usuario actualizado correctamente.");
+                    fetchAndRenderClientes();
+                    mostrarAviso("success", "✅ Cliente actualizado correctamente.");
                 } else {
-                    mostrarAviso("error", "❌ " + (result.message || "Error al actualizar usuario."));
+                    mostrarAviso("error", "❌ " + (result.message || "Error al actualizar cliente."));
                 }
             } catch (err) {
                 ocultarLoader();
@@ -315,8 +304,8 @@ export async function updateUsuario(id) {
 
     } catch (error) {
         ocultarLoader();
-        console.error("Error al obtener usuario:", error);
-        mostrarAviso("error", "❌ Error al cargar datos del usuario.");
+        console.error("Error al obtener cliente:", error);
+        mostrarAviso("error", "❌ Error al cargar datos del cliente.");
     }
 }
 
@@ -353,7 +342,6 @@ function abrirConfirmacionCerrar(form) {
         form.remove();
     });
 }
-
 
 
 function mostrarLoader(mensaje = "Procesando...") {
