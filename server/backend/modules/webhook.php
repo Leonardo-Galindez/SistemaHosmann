@@ -98,7 +98,7 @@ foreach ($data['Respuestas'] as $respuesta) {
             $horaFin = substr($respuesta['RespuestaHora'], 0, 8);
             break;
         case 'Cantidad horas':
-            $cantidadHoras = $respuesta['RespuestaDecimal'];
+            $cantidadHoras = $respuesta['RespuestaNumero'];
             break;
         case 'Observaciones':
             $observaciones = $respuesta['RespuestaTexto'];

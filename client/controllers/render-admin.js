@@ -37,12 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndRenderClientes();
     renderControllerDescargar();
 
-
-
     crearGraficosPartesPorTipo();
     crearComponenteChartGasoil();
     crearComponenteChartHuellaTorta();
-
     crearComponenteChartMotoniveladora();
     crearComponenteChartCisterna();
 });

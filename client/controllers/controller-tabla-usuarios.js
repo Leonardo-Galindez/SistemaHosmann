@@ -253,6 +253,7 @@ export async function updateUsuario(id) {
         form.querySelector("#usuario-id").value = usuario.id;
         form.querySelector("#usuario-nombre").value = usuario.nombre;
         form.querySelector("#usuario-apellido").value = usuario.apellido;
+        form.querySelector("#usuario-razonSocial").value = usuario.razonSocial || "";
         form.querySelector("#usuario-telefono").value = usuario.telefono || "";
         form.querySelector("#usuario-correo").value = usuario.correo;
         form.querySelector("#usuario-tipo").value = usuario.tipo;

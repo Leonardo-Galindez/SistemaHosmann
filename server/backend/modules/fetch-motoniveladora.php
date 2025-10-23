@@ -1,8 +1,26 @@
 <?php
 require_once '../../conection-bd.php';
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
+    // --- Obtener usuario logueado ---
+    $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
+    $filtros = [];
+
+    // Si el usuario logueado es cliente, aplicar filtro
+    if ($usuario === 'cliente') {
+        // ⚠️ Cambia 'PAE' por la variable de sesión real del cliente, ej: $_SESSION['cliente_nombre']
+        $filtros[] = "cliente = 'PAE'";
+    }
+
+    // Filtros base
+    $filtros[] = "LOWER(tipoEquipo) LIKE '%motoniveladora%'";
+    $filtros[] = "UPPER(lugarMotiniveladora) IN ('CASE', 'LINDERO')";
+
+    // Construir cláusula WHERE
+    $where = 'WHERE ' . implode(' AND ', $filtros);
+
     // === Consulta: obtener el total acumulado de kmRecorridos y kmRepaso para MOTONIVELADORA, agrupado por lugar ===
     $query = "
         SELECT 
@@ -10,8 +28,7 @@ try {
             SUM(kmRecorridos) AS total_kmRecorridos,
             SUM(kmRepaso) AS total_kmRepaso
         FROM parte
-        WHERE LOWER(tipoEquipo) LIKE '%motoniveladora%'
-          AND UPPER(lugarMotiniveladora) IN ('CASE', 'LINDERO')
+        $where
         GROUP BY lugarMotiniveladora
         ORDER BY lugarMotiniveladora ASC
     ";

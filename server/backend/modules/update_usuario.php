@@ -14,13 +14,14 @@ try {
         exit;
     }
 
-    $id         = (int) $_POST['id'];
-    $nombre     = trim($_POST['nombre'] ?? '');
-    $apellido   = trim($_POST['apellido'] ?? '');
-    $telefono   = trim($_POST['telefono'] ?? '');
-    $correo     = trim($_POST['correo'] ?? '');
-    $password   = trim($_POST['password'] ?? '');
-    $tipo       = trim($_POST['tipo'] ?? '');
+    $id = (int) $_POST['id'];
+    $nombre = trim($_POST['nombre'] ?? '');
+    $apellido = trim($_POST['apellido'] ?? '');
+    $razonSocial = trim($_POST['razonSocial'] ?? '');
+    $telefono = trim($_POST['telefono'] ?? '');
+    $correo = trim($_POST['correo'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+    $tipo = trim($_POST['tipo'] ?? '');
 
     if (empty($nombre) || empty($apellido) || empty($correo) || empty($tipo)) {
         echo json_encode([
@@ -57,6 +58,7 @@ try {
             UPDATE usuario
             SET nombre = :nombre,
                 apellido = :apellido,
+                razonSocial = :razonSocial,
                 telefono = :telefono,
                 correo = :correo,
                 tipo = :tipo,
@@ -69,6 +71,7 @@ try {
             UPDATE usuario
             SET nombre = :nombre,
                 apellido = :apellido,
+                razonSocial = :razonSocial,
                 telefono = :telefono,
                 correo = :correo,
                 tipo = :tipo,
@@ -82,6 +85,7 @@ try {
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->bindParam(':nombre', $nombre);
     $stmt->bindParam(':apellido', $apellido);
+    $stmt->bindParam(':razonSocial', $razonSocial);
     $stmt->bindParam(':telefono', $telefono);
     $stmt->bindParam(':correo', $correo);
     $stmt->bindParam(':tipo', $tipo);

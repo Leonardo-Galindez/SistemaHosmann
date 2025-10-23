@@ -6,6 +6,20 @@ header('Content-Type: application/json; charset=utf-8');
 try {
     $anio = isset($_GET['anio']) ? (int) $_GET['anio'] : date('Y');
 
+    // --- Obtener usuario logueado ---
+    $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
+    $filtros = ["YEAR(fecha) = :anio"];
+
+    // Si el usuario logueado es cliente, agregar filtro
+    if ($usuario === 'cliente') {
+        // ⚠️ Cambia 'PAE' por el valor real del cliente si se guarda en la sesión
+        $filtros[] = "cliente = 'PAE'";
+    }
+
+    // --- Construir cláusula WHERE ---
+    $where = 'WHERE ' . implode(' AND ', $filtros);
+
+    // === Consulta principal: consumo de gasoil por mes y categoría ===
     $query = "
         SELECT 
             MONTH(fecha) AS mes_num,
@@ -28,7 +42,7 @@ try {
             END AS categoria,
             SUM(COALESCE(ltsgasoil, 0)) AS total_gasoil
         FROM parte
-        WHERE YEAR(fecha) = :anio
+        $where
         GROUP BY mes_num, categoria
         ORDER BY mes_num;
     ";
@@ -38,17 +52,20 @@ try {
     $stmt->execute();
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // === Mapeo de meses ===
     $mesesNombres = [
         1 => "Enero", 2 => "Febrero", 3 => "Marzo", 4 => "Abril",
         5 => "Mayo", 6 => "Junio", 7 => "Julio", 8 => "Agosto",
         9 => "Septiembre", 10 => "Octubre", 11 => "Noviembre", 12 => "Diciembre"
     ];
 
+    // === Inicializar estructura de salida ===
     $data = [];
     foreach ($mesesNombres as $num => $nombre) {
         $data[$num] = ["mes" => $nombre, "Viales" => 0, "Pesados" => 0, "Livianos" => 0];
     }
 
+    // === Completar los valores desde la consulta ===
     foreach ($resultados as $fila) {
         $mes = (int) $fila['mes_num'];
         $categoria = $fila['categoria'];

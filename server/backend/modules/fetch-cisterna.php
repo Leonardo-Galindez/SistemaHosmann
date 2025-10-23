@@ -1,8 +1,26 @@
 <?php
 require_once '../../conection-bd.php';
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
+    // --- Obtener usuario logueado ---
+    $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
+    $filtros = [];
+
+    // Si el usuario logueado es un cliente, aplicar filtro
+    if ($usuario === 'cliente') {
+        // ⚠️ Cambia 'PAE' por la variable que contenga el cliente real si está guardada en la sesión
+        $filtros[] = "cliente = 'PAE'";
+    }
+
+    // --- Filtros base ---
+    $filtros[] = "LOWER(tipoEquipo) LIKE '%cisterna%'";
+    $filtros[] = "UPPER(lugarCisterna) IN ('CASE', 'LINDERO')";
+
+    // --- Construir cláusula WHERE dinámicamente ---
+    $where = 'WHERE ' . implode(' AND ', $filtros);
+
     // === Consulta: obtener el total acumulado de m3Batea y viajesCisterna para CISTERNA, agrupado por lugar ===
     $query = "
         SELECT 
@@ -10,8 +28,7 @@ try {
             SUM(m3Batea) AS total_m3Batea,
             SUM(viajesCisterna) AS total_viajesCisterna
         FROM parte
-        WHERE LOWER(tipoEquipo) LIKE '%cisterna%'
-          AND UPPER(lugarCisterna) IN ('CASE', 'LINDERO')
+        $where
         GROUP BY lugarCisterna
         ORDER BY lugarCisterna ASC
     ";
@@ -55,3 +72,4 @@ try {
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 ?>
+

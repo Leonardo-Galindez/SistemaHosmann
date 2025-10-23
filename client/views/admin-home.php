@@ -49,5 +49,15 @@ if (!isset($_SESSION['usuario_id'])) {
     <script type="module" src="../controllers/controller-nav.js"></script>
 
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Ejecutar el script del backend para procesar correos
+  fetch("../../server/backend/modules/upload.php", { method: "GET" })
+    .then(response => response.text())
+    .then(data => console.log("Procesamiento de correos ejecutado:", data))
+    .catch(err => console.error("Error al ejecutar upload.php:", err));
+});
+</script>
+
 
 </html>

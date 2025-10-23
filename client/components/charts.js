@@ -1,5 +1,7 @@
 // === PARTES POR TIPO CON ICONOS ===
+
 export async function crearGraficosPartesPorTipo() {
+  
   const dashboard = document.getElementById("fila-velocimetros");
   if (!dashboard) return console.warn("No se encontró #tabla-dashboard");
 

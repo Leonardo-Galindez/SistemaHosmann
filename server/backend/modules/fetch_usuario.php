@@ -22,6 +22,7 @@ try {
             id,
             nombre,
             apellido,
+            razonSocial,
             telefono,
             correo,
             tipo,

@@ -176,12 +176,17 @@ export function crearFormUsuario() {
 
                 <div>
                     <label class="block mb-1 text-slate-300">Nombre</label>
-                    <input type="text" name="nombre" class="input" required />
+                    <input type="text" name="nombre" class="input"  />
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-300">Apellido</label>
-                    <input type="text" name="apellido" class="input" required />
+                    <input type="text" name="apellido" class="input"  />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Razon Social</label>
+                    <input type="text" name="razonSocial" class="input"  />
                 </div>
 
                 <div>
@@ -290,12 +295,17 @@ export function crearFormUpdateUsuario() {
 
                 <div>
                     <label class="block mb-1 text-slate-300">Nombre</label>
-                    <input type="text" name="nombre" id="usuario-nombre" class="input" required />
+                    <input type="text" name="nombre" id="usuario-nombre" class="input"  />
                 </div>
 
                 <div>
                     <label class="block mb-1 text-slate-300">Apellido</label>
-                    <input type="text" name="apellido" id="usuario-apellido" class="input" required />
+                    <input type="text" name="apellido" id="usuario-apellido" class="input"  />
+                </div>
+
+                <div>
+                    <label class="block mb-1 text-slate-300">Razon Social</label>
+                    <input type="text" name="razonSocial" id="usuario-razonSocial" class="input"  />
                 </div>
 
                 <div>

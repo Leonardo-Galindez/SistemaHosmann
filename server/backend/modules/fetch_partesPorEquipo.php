@@ -1,8 +1,24 @@
 <?php
 require_once '../../conection-bd.php';
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
+    // --- Obtener usuario logueado ---
+    $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
+    $filtros = [];
+
+    if ($usuario === 'cliente') {
+        // Cambia 'PAE' por el nombre real del cliente si se guarda en la sesión
+        $filtros[] = "cliente = 'PAE'";
+    }
+
+    // --- Construir cláusula WHERE dinámicamente ---
+    $where = '';
+    if (!empty($filtros)) {
+        $where = 'WHERE ' . implode(' AND ', $filtros);
+    }
+
     // === Consulta principal: cantidad de partes por tipo de equipo ===
     $query = "
         SELECT 
@@ -25,6 +41,7 @@ try {
             END AS categoria,
             COUNT(*) AS total_partes
         FROM parte
+        $where
         GROUP BY categoria
         ORDER BY categoria ASC
     ";
@@ -51,7 +68,7 @@ try {
 
     foreach ($tipos as $t) {
         $categoria = $t["categoria"];
-        $cantidad = (int)$t["total_partes"];
+        $cantidad = (int) $t["total_partes"];
 
         $resultado["tipos"][] = [
             "categoria" => $categoria,

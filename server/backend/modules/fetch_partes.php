@@ -15,23 +15,27 @@ $fechaFin = isset($_GET['fechaFin']) ? $_GET['fechaFin'] : '';
 
 try {
     // --- Obtener usuario logueado ---
-   $usuario = strtolower(trim( $_SESSION['usuario_tipo'] ?? 'desconocido'));
+    $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
 
     // --- Construcción dinámica de filtros ---
     $filtros = [];
     $parametros = [];
 
-    if (!empty($cliente)) {
-        $filtros[] = "cliente LIKE :cliente";
-        $parametros[':cliente'] = "%$cliente%";
-    }
 
-    // 🔒 Si es usuario de tipo administración, fuerza mostrar solo APROBADOS
-    if ($usuario === 'administracion') {
+    if ($usuario === 'administracion' || $usuario === 'cliente') {
         $filtros[] = "estado = 'APROBADO'";
     } elseif (!empty($estado)) {
         $filtros[] = "estado = :estado";
         $parametros[':estado'] = $estado;
+    }
+
+    if ($usuario === 'cliente') {
+        $filtros[] = "cliente = 'PAE'";
+    } else {
+        if (!empty($cliente)) {
+            $filtros[] = "cliente LIKE :cliente";
+            $parametros[':cliente'] = "%$cliente%";
+        }
     }
 
     if (!empty($fechaInicio) && !empty($fechaFin)) {

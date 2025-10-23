@@ -1,24 +1,25 @@
 <?php
-require_once '../conection-bd.php'; // conexión PDO
+require_once '../../conection-bd.php'; // conexión PDO
 
-// === CONFIGURACIÓN DEL CORREO ===
-$hostname = '{imap.gmail.com:993/imap/ssl}INBOX';
-$username = 'leonardo.galindez@est.fi.uncoma.edu.ar';
-$password = '44237998';
+// === CONFIGURACIÓN DEL CORREO (cuenta cPanel) ===
+$hostname = '{mail.smartform.com.ar:993/imap/ssl}INBOX';
+$username = 'prueba@smartform.com.ar';
+$password = 'Prueba-55*';
 
-// === CONFIGURACIÓN FTP (subida al hosting cPanel) ===
+// === CONFIGURACIÓN FTP ===
 $ftp_host = "smartform.com.ar";
 $ftp_user = "smartform";
 $ftp_pass = "nfsf858-2761";
-$ftp_path = "/public_html/hosmann/SistemaHosmann/server/backend/modules/uploads/"; // ruta destino
+$ftp_path = "/public_html/hosmann/SistemaHosmann/server/backend/modules/uploads/";
 
 try {
-    $inbox = imap_open($hostname, $username, $password) or die('❌ No se pudo conectar al correo Gmail.');
+    $inbox = imap_open($hostname, $username, $password);
+    if (!$inbox) {
+        exit;
+    }
 
-    // Buscar correos no leídos
     $emails = imap_search($inbox, 'UNSEEN');
     if (!$emails) {
-        echo "No hay correos nuevos.\n";
         imap_close($inbox);
         exit;
     }
@@ -28,21 +29,18 @@ try {
         $subject = imap_utf8($overview->subject ?? '');
         $from = $overview->from ?? '';
 
-        // Solo procesar si proviene de notificaciones@smartform.com.ar
+        // Validar remitente
         if (stripos($from, 'notificaciones@smartform.com.ar') === false) {
-            echo "Correo ignorado: remitente no autorizado ($from)\n";
             imap_setflag_full($inbox, $email_number, "\\Seen");
             continue;
         }
 
-        // Buscar número idRespuesta en el asunto
-        if (!preg_match('/\b(\d{2,})\b/', $subject, $matches)) {
-            echo "Asunto sin ID válido: $subject\n";
+        // Extraer ID del asunto (ejemplo: "Parte Diario Hosmann - 17552")
+        if (!preg_match('/Hosmann\s*-\s*(\d{2,})/', $subject, $matches)) {
             imap_setflag_full($inbox, $email_number, "\\Seen");
             continue;
         }
         $idRespuesta = $matches[1];
-        echo "Correo válido (idRespuesta: $idRespuesta)\n";
 
         // Buscar adjuntos
         $structure = imap_fetchstructure($inbox, $email_number);
@@ -52,56 +50,49 @@ try {
             for ($i = 0; $i < count($structure->parts); $i++) {
                 $part = $structure->parts[$i];
                 if (isset($part->disposition) && strtolower($part->disposition) === 'attachment') {
-                    $filename = $part->dparameters[0]->value ?? ('archivo_' . time());
                     $data = imap_fetchbody($inbox, $email_number, $i + 1);
-
                     if ($part->encoding == 3) $data = base64_decode($data);
                     elseif ($part->encoding == 4) $data = quoted_printable_decode($data);
 
-                    $attachments[] = [
-                        'filename' => $filename,
-                        'data' => $data
-                    ];
+                    $attachments[] = $data;
                 }
             }
         }
 
-        // Subir adjunto por FTP
-        $conn = ftp_ssl_connect($ftp_host);
-        if (!$conn) die("Error al conectar con el FTP\n");
-        ftp_login($conn, $ftp_user, $ftp_pass);
-        ftp_pasv($conn, true);
-
-        foreach ($attachments as $adj) {
-            $nombreArchivo = time() . '_' . preg_replace('/\s+/', '_', $adj['filename']);
-            $tempPath = sys_get_temp_dir() . '/' . $nombreArchivo;
-            file_put_contents($tempPath, $adj['data']);
-
-            $remotePath = $ftp_path . $nombreArchivo;
-            if (ftp_put($conn, $remotePath, $tempPath, FTP_BINARY)) {
-                echo "Archivo subido a hosting: $nombreArchivo\n";
-
-                // Actualizar BD
-                $stmt = $pdo->prepare("UPDATE parte SET pdf = :pdf WHERE idRespuesta = :idRespuesta");
-                $stmt->execute([
-                    ':pdf' => 'uploads/' . $nombreArchivo,
-                    ':idRespuesta' => $idRespuesta
-                ]);
-                echo "PDF vinculado a parte $idRespuesta\n";
-            } else {
-                echo "Error al subir $nombreArchivo al servidor\n";
-            }
-            unlink($tempPath);
+        if (empty($attachments)) {
+            imap_setflag_full($inbox, $email_number, "\\Seen");
+            continue;
         }
 
+        // Subir adjuntos al FTP
+        $conn = ftp_ssl_connect($ftp_host);
+        if (!$conn) exit;
+
+        if (!ftp_login($conn, $ftp_user, $ftp_pass)) exit;
+        ftp_pasv($conn, true);
+
+        $nombreArchivo = "ParteDiario-" . $idRespuesta . ".pdf";
+        $tempPath = sys_get_temp_dir() . '/' . $nombreArchivo;
+        file_put_contents($tempPath, $attachments[0]);
+
+        $remotePath = $ftp_path . $nombreArchivo;
+        if (ftp_put($conn, $remotePath, $tempPath, FTP_BINARY)) {
+            $stmt = $pdo->prepare("UPDATE parte SET pdf = :pdf WHERE idRespuesta = :idRespuesta");
+            $stmt->execute([
+                ':pdf' => $nombreArchivo,
+                ':idRespuesta' => $idRespuesta
+            ]);
+        }
+
+        unlink($tempPath);
         ftp_close($conn);
         imap_setflag_full($inbox, $email_number, "\\Seen");
     }
 
     imap_close($inbox);
-    echo "Proceso finalizado.\n";
 
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    // Silencioso: no guarda logs ni imprime errores
+    exit;
 }
 ?>

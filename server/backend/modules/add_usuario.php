@@ -6,13 +6,14 @@ try {
     // Obtener los datos del formulario (esperando que vengan por POST)
     $nombre   = $_POST['nombre'] ?? '';
     $apellido = $_POST['apellido'] ?? '';
+    $razonSocial = $_POST['razonSocial'] ?? '';
     $telefono = $_POST['telefono'] ?? '';
     $correo   = $_POST['correo'] ?? '';
     $password = $_POST['password'] ?? '';
     $tipo     = $_POST['tipo'] ?? '';
 
     // Validar campos obligatorios
-    if (empty($nombre) || empty($apellido) || empty($correo) || empty($password) || empty($tipo)) {
+    if (empty($correo) || empty($password) || empty($tipo)) {
         echo json_encode([
             "success" => false,
             "message" => "Faltan campos obligatorios."
@@ -29,9 +30,9 @@ try {
     // Consulta SQL (uso de parámetros preparados)
     $query = "
         INSERT INTO usuario
-            (nombre, apellido, telefono, correo, password, tipo, fechaCreacion, fechaEdicion)
+            (nombre, apellido, telefono, correo, password, tipo, fechaCreacion, fechaEdicion,razonSocial)
         VALUES 
-            (:nombre, :apellido, :telefono, :correo, :password, :tipo, :fechaCreacion, :fechaEdicion)
+            (:nombre, :apellido, :telefono, :correo, :password, :tipo, :fechaCreacion, :fechaEdicion,:razonSocial)
     ";
 
     $stmt = $pdo->prepare($query);
@@ -39,6 +40,7 @@ try {
     $stmt->execute([
         ':nombre'        => $nombre,
         ':apellido'      => $apellido,
+        ':razonSocial'  => $razonSocial,
         ':telefono'      => $telefono,
         ':correo'        => $correo,
         ':password'      => $passwordHash,
