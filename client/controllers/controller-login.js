@@ -11,7 +11,7 @@ const submitBtn = form.querySelector("button[type='submit']");
 togglePassword.addEventListener('click', () => {
     const isPassword = passwordInput.getAttribute('type') === 'password';
     passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
-    eyeOpen.classList.toggle('hidden', isPassword);  
+    eyeOpen.classList.toggle('hidden', isPassword);
     eyeClosed.classList.toggle('hidden', !isPassword);
 });
 
@@ -64,6 +64,8 @@ form.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (data.success) {
+            localStorage.setItem("tipoUsuario", data.user.tipo);
+            console.log("usuario:", data.user.tipo);
             showAlert("Login exitoso. Redirigiendo...", "success");
 
             setTimeout(() => {

@@ -56,8 +56,9 @@ export async function fetchAndRenderPartes(filtros = {}) {
         }
 
         const partes = result.data;
-        const usuario = result.user?.toLowerCase() ?? "desconocido"; // 🔍 tipo de usuario
-        const esAdmin = usuario === "administracion"; // 🔒 detectar tipo admin
+        const usuario = result.user?.toLowerCase() ?? "desconocido";
+        const esAdmin = usuario === "administracion" || usuario === "cliente";
+
         partesActuales = partes;
 
         if (!partes || partes.length === 0) {
@@ -78,6 +79,7 @@ export async function fetchAndRenderPartes(filtros = {}) {
 
             // --- Botones según tipo de usuario ---
             let botonesHTML = "";
+            console.log(esAdmin);
             if (!esAdmin) {
                 botonesHTML += `
                     <button class="px-2 py-1 text-xs rounded bg-yellow-600 text-white hover:bg-yellow-700 transition flex items-center btn-editar" title="Editar">

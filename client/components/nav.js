@@ -1,4 +1,4 @@
-export function crearNavbar() {
+export async function crearNavbar() {
     const nav = document.createElement("nav");
     nav.className = [
         "fixed top-0 left-0 w-full z-50",
@@ -26,10 +26,10 @@ export function crearNavbar() {
                     <a href="#partes" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
                          <i class='bx bx-file'></i> Partes
                     </a>
-                    <a href="#clientes" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
+                    <a id="linkClientes" href="#clientes" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
                         <i class='bx bx-buildings'></i> Clientes
                     </a>
-                    <a href="#usuarios" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
+                    <a id="linkUsuarios" href="#usuarios" class="flex items-center gap-1 px-3 py-1 text-white text-sm border border-white/30 rounded-md hover:bg-white/10 transition">
                          <i class='bx bx-user'></i> Usuarios
                     </a>
                     <a href="#dashboard" 
@@ -51,10 +51,10 @@ export function crearNavbar() {
             <a href="#partes" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
                 <i class='bx bx-file'></i> Partes
             </a>
-            <a href="#clientes" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+            <a id="mobileClientes" href="#clientes" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
                 <i class='bx bx-buildings'></i> Clientes
             </a>
-            <a href="#usuarios" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
+            <a id="mobileUsuarios" href="#usuarios" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
                 <i class='bx bx-user'></i> Usuarios
             </a>
             <a href="#dashboard" class="flex items-center gap-2 px-3 py-2 text-white border border-white/20 rounded-md hover:bg-white/10 transition">
@@ -85,20 +85,50 @@ export function crearNavbar() {
         </div>
     `;
 
-    // Script para toggle menú móvil
-    setTimeout(() => {
-        const toggle = nav.querySelector("#menuToggle");
-        const menu = nav.querySelector("#mobileMenu");
-        toggle?.addEventListener("click", () => {
-            menu.classList.toggle("hidden");
-        });
-    }, 0);
-
+    // Agregar el nav al DOM
     const navContainer = document.getElementById("nav");
     if (navContainer) {
         navContainer.appendChild(nav);
     } else {
         console.warn("No se encontró el contenedor #nav para insertar el navbar.");
+        return;
     }
 
+    // Script para toggle menú móvil
+    setTimeout(() => {
+        const toggle = nav.querySelector("#menuToggle");
+        const menu = nav.querySelector("#mobileMenu");
+        toggle?.addEventListener("click", () => menu.classList.toggle("hidden"));
+    }, 0);
+
+    // 🔹 Obtener tipo de usuario desde el backend
+    try {
+        const response = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_user.php", {
+            method: "GET",
+            credentials: "include" // Enviar cookies de sesión
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            const tipoUsuario = data.usuario.tipo;
+            console.log("Tipo de usuario:", tipoUsuario);
+
+            if (tipoUsuario === "cliente") {
+                const linkClientes = nav.querySelector("#linkClientes");
+                const linkUsuarios = nav.querySelector("#linkUsuarios");
+                const mobileClientes = nav.querySelector("#mobileClientes");
+                const mobileUsuarios = nav.querySelector("#mobileUsuarios");
+
+                linkClientes?.classList.add("hidden");
+                linkUsuarios?.classList.add("hidden");
+                mobileClientes?.classList.add("hidden");
+                mobileUsuarios?.classList.add("hidden");
+            }
+        } else {
+            console.warn("No hay usuario logueado, redirigiendo al login...");
+            window.location.href = "../../login.html"; // o la ruta que uses para login
+        }
+    } catch (error) {
+        console.error("Error al obtener tipo de usuario:", error);
+    }
 }

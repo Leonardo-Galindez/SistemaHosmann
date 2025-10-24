@@ -516,8 +516,8 @@ export function crearFormFiltros() {
                         <label class="block mb-1 text-slate-300">Cliente</label>
                         <select id="filtro-cliente" class="input">
                             <option value="">Seleccione un cliente</option>
-                            <option value="cliente1">Cliente 1</option>
-                            <option value="cliente2">Cliente 2</option>
+                            <option value="PAE">PAE</option>
+                            <option value="Cliente2">Cliente 2</option>
                             <option value="cliente3">Cliente 3</option>
                         </select>
                     </div>
