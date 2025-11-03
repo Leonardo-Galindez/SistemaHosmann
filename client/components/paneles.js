@@ -91,6 +91,11 @@ export function crearPanelDashboard() {
     panelDashboard.innerHTML = `
         <div class="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
             <h1 class="text-xl font-semibold text-white">Dashboard Gerencial</h1>
+            <div class="flex gap-2 flex-wrap">
+                <button id="btn-filtros-tablero" class="flex items-center gap-1 px-3 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+                    <i class='bx bx-filter text-base'></i> Filtros
+                </button>
+            </div>
         </div>
     `;
 

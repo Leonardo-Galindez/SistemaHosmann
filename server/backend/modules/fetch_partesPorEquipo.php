@@ -8,18 +8,30 @@ try {
     $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
     $filtros = [];
 
+    // --- Filtros por cliente ---
     if ($usuario === 'cliente') {
-        // Cambia 'PAE' por el nombre real del cliente si se guarda en la sesión
         $filtros[] = "cliente = 'PAE'";
     }
 
-    // --- Construir cláusula WHERE dinámicamente ---
+    // --- Filtros por fecha ---
+    $fechaInicio = $_POST['fechaInicio'] ?? $_GET['fechaInicio'] ?? '';
+    $fechaFin = $_POST['fechaFin'] ?? $_GET['fechaFin'] ?? '';
+
+    if (!empty($fechaInicio) && !empty($fechaFin)) {
+        $filtros[] = "fecha BETWEEN :fechaInicio AND :fechaFin";
+    } elseif (!empty($fechaInicio)) {
+        $filtros[] = "fecha >= :fechaInicio";
+    } elseif (!empty($fechaFin)) {
+        $filtros[] = "fecha <= :fechaFin";
+    }
+
+    // --- Construcción del WHERE ---
     $where = '';
     if (!empty($filtros)) {
         $where = 'WHERE ' . implode(' AND ', $filtros);
     }
 
-    // === Consulta principal: cantidad de partes por tipo de equipo ===
+    // === Consulta principal ===
     $query = "
         SELECT 
             CASE
@@ -47,13 +59,22 @@ try {
     ";
 
     $stmt = $pdo->prepare($query);
+
+    // Vincular parámetros de fecha si existen
+    if (!empty($fechaInicio)) {
+        $stmt->bindValue(':fechaInicio', $fechaInicio);
+    }
+    if (!empty($fechaFin)) {
+        $stmt->bindValue(':fechaFin', $fechaFin);
+    }
+
     $stmt->execute();
     $tipos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (empty($tipos)) {
         echo json_encode([
             "success" => false,
-            "message" => "No hay registros de partes cargados."
+            "message" => "No hay registros de partes cargados en el rango de fechas."
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         exit;
     }
@@ -68,7 +89,7 @@ try {
 
     foreach ($tipos as $t) {
         $categoria = $t["categoria"];
-        $cantidad = (int) $t["total_partes"];
+        $cantidad = (int)$t["total_partes"];
 
         $resultado["tipos"][] = [
             "categoria" => $categoria,
@@ -88,3 +109,4 @@ try {
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 ?>
+

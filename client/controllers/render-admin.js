@@ -4,6 +4,7 @@ import { crearFooter } from "../components/footer.js";
 import { crearTablaClientes, crearTablaPartes, crearTablaUsuarios, crearTablaDashboard } from "../components/tablas.js";
 import { fetchAndRenderPartes } from "./controller-tabla-partes.js";
 import { renderControllerFiltros } from "./controller-filtros.js";
+import { renderControllerFiltrosTablero } from "./controller-filtros-tablero.js";
 import { renderControllerDescargar } from "./controller-reporte.js";
 import { renderControllerUsuarios } from "./controller-usuarios.js";
 import { fetchAndRenderUsuarios } from "./controller-tabla-usuarios.js";
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderControllerUsuarios();
     renderControllerFiltros();
+    renderControllerFiltrosTablero();
     fetchAndRenderPartes();
     fetchAndRenderUsuarios();
     fetchAndRenderClientes();

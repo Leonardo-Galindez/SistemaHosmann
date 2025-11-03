@@ -8,20 +8,33 @@ try {
     $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
     $filtros = [];
 
-    // Si el usuario logueado es un cliente, aplicar filtro
-    if ($usuario === 'cliente') {
-        // ⚠️ Cambia 'PAE' por la variable que contenga el cliente real si está guardada en la sesión
-        $filtros[] = "cliente = 'PAE'";
-    }
-
-    // --- Filtros base ---
+    // --- Filtro base por tipo de equipo ---
     $filtros[] = "LOWER(tipoEquipo) LIKE '%cisterna%'";
     $filtros[] = "UPPER(lugarCisterna) IN ('CASE', 'LINDERO')";
 
-    // --- Construir cláusula WHERE dinámicamente ---
+    // --- Filtro por usuario cliente (si aplica) ---
+    if ($usuario === 'cliente') {
+        // ⚠️ Cambia 'PAE' por la variable de sesión real si la tenés (por ejemplo $_SESSION['cliente'])
+        $cliente = $_SESSION['cliente'] ?? 'PAE';
+        $filtros[] = "cliente = :cliente";
+    }
+
+    // --- Filtros de fecha recibidos por GET ---
+    $fechaInicio = $_GET['fechaInicio'] ?? '';
+    $fechaFin = $_GET['fechaFin'] ?? '';
+
+    if (!empty($fechaInicio) && !empty($fechaFin)) {
+        $filtros[] = "fecha BETWEEN :fechaInicio AND :fechaFin";
+    } elseif (!empty($fechaInicio)) {
+        $filtros[] = "fecha >= :fechaInicio";
+    } elseif (!empty($fechaFin)) {
+        $filtros[] = "fecha <= :fechaFin";
+    }
+
+    // --- Construir cláusula WHERE ---
     $where = 'WHERE ' . implode(' AND ', $filtros);
 
-    // === Consulta: obtener el total acumulado de m3Batea y viajesCisterna para CISTERNA, agrupado por lugar ===
+    // --- Consulta SQL ---
     $query = "
         SELECT 
             lugarCisterna AS lugar,
@@ -34,18 +47,31 @@ try {
     ";
 
     $stmt = $pdo->prepare($query);
+
+    // --- Enlazar parámetros dinámicos ---
+    if ($usuario === 'cliente') {
+        $stmt->bindValue(':cliente', $cliente);
+    }
+    if (!empty($fechaInicio)) {
+        $stmt->bindValue(':fechaInicio', $fechaInicio);
+    }
+    if (!empty($fechaFin)) {
+        $stmt->bindValue(':fechaFin', $fechaFin);
+    }
+
     $stmt->execute();
     $lugares = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // --- Validar si hay resultados ---
     if (empty($lugares)) {
         echo json_encode([
             "success" => false,
-            "message" => "No hay registros de cisterna en CASE o LINDERO."
+            "message" => "No hay registros de cisterna en CASE o LINDERO para las fechas indicadas."
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         exit;
     }
 
-    // === Estructura final ===
+    // --- Estructura de respuesta ---
     $resultado = [
         "success" => true,
         "tipoEquipo" => "Cisterna",
@@ -72,4 +98,3 @@ try {
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 ?>
-

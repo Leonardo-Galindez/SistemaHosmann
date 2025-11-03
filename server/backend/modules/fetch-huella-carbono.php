@@ -4,25 +4,40 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
-    $anio = isset($_GET['anio']) ? (int) $_GET['anio'] : date('Y');
+    // === Filtros recibidos ===
+    $fechaInicio = $_GET['fechaInicio'] ?? null;
+    $fechaFin = $_GET['fechaFin'] ?? null;
 
-    // --- Obtener usuario logueado ---
+    // === Usuario logueado ===
     $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
-    $filtros = ["YEAR(fecha) = :anio"];
 
-    // Si el usuario logueado es cliente, aplicar filtro
+    // === Filtros dinámicos ===
+    $filtros = [];
+    $params = [];
+
+    // 🔹 Filtro por rango de fechas
+    if ($fechaInicio) {
+        $filtros[] = "fecha >= :fechaInicio";
+        $params[':fechaInicio'] = $fechaInicio;
+    }
+
+    if ($fechaFin) {
+        $filtros[] = "fecha <= :fechaFin";
+        $params[':fechaFin'] = $fechaFin;
+    }
+
+    // 🔹 Filtro por cliente (si aplica)
     if ($usuario === 'cliente') {
-        // ⚠️ Cambia 'PAE' por la variable real si el cliente se guarda en la sesión
+        // ⚠️ Reemplazá 'PAE' por la variable real guardada en sesión si corresponde
         $filtros[] = "cliente = 'PAE'";
     }
 
-    // --- Construir cláusula WHERE dinámica ---
-    $where = 'WHERE ' . implode(' AND ', $filtros);
+    // --- Construir cláusula WHERE ---
+    $where = !empty($filtros) ? 'WHERE ' . implode(' AND ', $filtros) : '';
 
-    // === Consulta principal: consumo de gasoil por mes y categoría ===
+    // === Consulta principal: consumo total de gasoil por categoría ===
     $query = "
         SELECT 
-            MONTH(fecha) AS mes_num,
             CASE
                 WHEN LOWER(tipoEquipo) LIKE '%motoniveladora%' 
                     OR LOWER(tipoEquipo) LIKE '%retropala%'
@@ -43,46 +58,43 @@ try {
             SUM(COALESCE(ltsgasoil, 0)) AS total_gasoil
         FROM parte
         $where
-        GROUP BY mes_num, categoria
-        ORDER BY mes_num;
+        GROUP BY categoria;
     ";
 
     $stmt = $pdo->prepare($query);
-    $stmt->bindValue(':anio', $anio, PDO::PARAM_INT);
+
+    // Vincular parámetros dinámicamente
+    foreach ($params as $clave => $valor) {
+        $stmt->bindValue($clave, $valor);
+    }
+
     $stmt->execute();
     $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // === Nombres de los meses ===
-    $mesesNombres = [
-        1 => "Enero", 2 => "Febrero", 3 => "Marzo", 4 => "Abril",
-        5 => "Mayo", 6 => "Junio", 7 => "Julio", 8 => "Agosto",
-        9 => "Septiembre", 10 => "Octubre", 11 => "Noviembre", 12 => "Diciembre"
+    // === Estructura base ===
+    $data = [
+        "Viales" => 0,
+        "Pesados" => 0,
+        "Livianos" => 0
     ];
-
-    // === Inicializar estructura base ===
-    $data = [];
-    foreach ($mesesNombres as $num => $nombre) {
-        $data[$num] = [
-            "mes" => $nombre,
-            "Viales" => 0,
-            "Pesados" => 0,
-            "Livianos" => 0
-        ];
-    }
 
     // === Calcular huella de carbono (kg CO₂) ===
     foreach ($resultados as $fila) {
-        $mes = (int) $fila['mes_num'];
         $categoria = $fila['categoria'];
         $totalLitros = (float) $fila['total_gasoil'];
         $huellaCO2 = $totalLitros * 2.5; // 💨 Conversión a kg CO₂
 
-        if (isset($data[$mes][$categoria])) {
-            $data[$mes][$categoria] += $huellaCO2;
+        if (isset($data[$categoria])) {
+            $data[$categoria] += $huellaCO2;
         }
     }
 
-    echo json_encode(array_values($data), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    // === Devolver formato JSON ===
+    echo json_encode([
+        'success' => true,
+        'data' => $data
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode([
@@ -92,4 +104,3 @@ try {
     exit;
 }
 ?>
-

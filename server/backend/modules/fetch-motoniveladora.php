@@ -8,20 +8,32 @@ try {
     $usuario = strtolower(trim($_SESSION['usuario_tipo'] ?? 'desconocido'));
     $filtros = [];
 
-    // Si el usuario logueado es cliente, aplicar filtro
-    if ($usuario === 'cliente') {
-        // ⚠️ Cambia 'PAE' por la variable de sesión real del cliente, ej: $_SESSION['cliente_nombre']
-        $filtros[] = "cliente = 'PAE'";
-    }
-
-    // Filtros base
+    // --- Filtros base ---
     $filtros[] = "LOWER(tipoEquipo) LIKE '%motoniveladora%'";
     $filtros[] = "UPPER(lugarMotiniveladora) IN ('CASE', 'LINDERO')";
 
-    // Construir cláusula WHERE
+    // --- Filtro por usuario cliente ---
+    if ($usuario === 'cliente') {
+        // Cambia 'PAE' por la variable de sesión real si la tenés disponible
+        $filtros[] = "cliente = 'PAE'";
+    }
+
+    // --- Filtros de fecha ---
+    $fechaInicio = $_GET['fechaInicio'] ?? '';
+    $fechaFin = $_GET['fechaFin'] ?? '';
+
+    if (!empty($fechaInicio) && !empty($fechaFin)) {
+        $filtros[] = "fecha BETWEEN :fechaInicio AND :fechaFin";
+    } elseif (!empty($fechaInicio)) {
+        $filtros[] = "fecha >= :fechaInicio";
+    } elseif (!empty($fechaFin)) {
+        $filtros[] = "fecha <= :fechaFin";
+    }
+
+    // --- Construir cláusula WHERE ---
     $where = 'WHERE ' . implode(' AND ', $filtros);
 
-    // === Consulta: obtener el total acumulado de kmRecorridos y kmRepaso para MOTONIVELADORA, agrupado por lugar ===
+    // --- Consulta SQL ---
     $query = "
         SELECT 
             lugarMotiniveladora AS lugar,
@@ -34,18 +46,23 @@ try {
     ";
 
     $stmt = $pdo->prepare($query);
+
+    // --- Enlazar parámetros de fecha si existen ---
+    if (!empty($fechaInicio)) $stmt->bindValue(':fechaInicio', $fechaInicio);
+    if (!empty($fechaFin)) $stmt->bindValue(':fechaFin', $fechaFin);
+
     $stmt->execute();
     $lugares = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (empty($lugares)) {
         echo json_encode([
             "success" => false,
-            "message" => "No hay registros de motoniveladora en CASE o LINDERO."
+            "message" => "No hay registros de motoniveladora en CASE o LINDERO para las fechas indicadas."
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         exit;
     }
 
-    // === Estructura final ===
+    // --- Estructura final ---
     $resultado = [
         "success" => true,
         "tipoEquipo" => "Motoniveladora",

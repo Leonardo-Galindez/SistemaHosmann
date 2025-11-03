@@ -1,7 +1,15 @@
 // === PARTES POR TIPO CON ICONOS ===
+let filtrosActivos = {};
+export async function crearGraficosPartesPorTipo(filtros = {}) {
+  if (Object.keys(filtros).length > 0) {
+    filtrosActivos = filtros;
+  }
+  const { fechaInicio = "", fechaFin = "" } = filtrosActivos;
+  const params = new URLSearchParams();
 
-export async function crearGraficosPartesPorTipo() {
-  
+  if (fechaInicio) params.append("fechaInicio", fechaInicio);
+  if (fechaFin) params.append("fechaFin", fechaFin);
+
   const dashboard = document.getElementById("fila-velocimetros");
   if (!dashboard) return console.warn("No se encontró #tabla-dashboard");
 
@@ -15,14 +23,10 @@ export async function crearGraficosPartesPorTipo() {
   };
 
 
-  const iconos = {
-    Viales: "🚜",     // máquina vial
-    Pesados: "🚚",    // camión
-    Livianos: "🚗"    // camioneta / auto
-  };
-
   try {
-    const res = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_partesPorEquipo.php");
+    const res = await fetch(
+      `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch_partesPorEquipo.php?${params.toString()}`
+    );
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
 
@@ -55,7 +59,7 @@ export async function crearGraficosPartesPorTipo() {
             ? "amber-500"
             : "emerald-400"
         } drop-shadow-md">
-            ${iconos[tipo]} ${tipo}
+
           </h3>
           <span class="bg-${tipo === "Pesados"
           ? "red"
@@ -186,72 +190,85 @@ export async function crearGraficosPartesPorTipo() {
 
 
 // === HUELLAS DE CARBONO (DONUT 3D PREMIUM CORREGIDO - SIN TOTAL CENTRAL Y CON RADIO INTERNO MÁS PEQUEÑO) ===
-export async function crearComponenteChartHuellaTorta() {
+export async function crearComponenteChartHuellaTorta(filtros = {}) {
+  if (Object.keys(filtros).length > 0) {
+    filtrosActivos = filtros;
+  }
+
+  const { fechaInicio = "", fechaFin = "" } = filtrosActivos;
+  const params = new URLSearchParams();
+
+  if (fechaInicio) params.append("fechaInicio", fechaInicio);
+  if (fechaFin) params.append("fechaFin", fechaFin);
+
   const dashboard = document.getElementById("fila-secundaria");
   if (!dashboard) return console.warn("No se encontró #fila-secundaria");
 
-  const graficoContainer = document.createElement("div");
-  graficoContainer.className = `
-    flex justify-center items-center w-full
-  `;
-  dashboard.appendChild(graficoContainer);
+  // 🔹 Si el contenedor ya existe, no lo volvemos a crear
+  let graficoContainer = document.getElementById("graficoHuellaContainer");
 
-  graficoContainer.innerHTML = `
-    <div class="w-full h-full">
-      <div class="relative p-6 h-[420px] md:h-[460px] rounded-3xl border border-white/10 
-        bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-gray-900/95 
-        shadow-[0_0_50px_rgba(34,211,238,0.25)] hover:shadow-[0_0_80px_rgba(52,211,153,0.3)]
-        backdrop-blur-2xl transition-all duration-700 hover:scale-[1.02] overflow-hidden">
+  if (!graficoContainer) {
+    graficoContainer = document.createElement("div");
+    graficoContainer.id = "graficoHuellaContainer";
+    graficoContainer.className = `flex justify-center items-center w-full`;
+    dashboard.appendChild(graficoContainer);
 
-        <!-- Efecto de brillo -->
-        <div class="absolute inset-0 bg-gradient-to-tr from-cyan-400/10 via-transparent to-emerald-500/10 rounded-3xl pointer-events-none"></div>
+    graficoContainer.innerHTML = `
+      <div class="w-full h-full">
+        <div class="relative p-6 h-[420px] md:h-[460px] rounded-3xl border border-white/10 
+          bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-gray-900/95 
+          shadow-[0_0_50px_rgba(34,211,238,0.25)] hover:shadow-[0_0_80px_rgba(52,211,153,0.3)]
+          backdrop-blur-2xl transition-all duration-700 hover:scale-[1.02] overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-tr from-cyan-400/10 via-transparent to-emerald-500/10 rounded-3xl pointer-events-none"></div>
 
-        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3 relative z-10">
-          <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-400 to-blue-400 drop-shadow-md">
-            Huella de carbono total
-          </h3>
-          <span class="bg-cyan-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
-            Donut
-          </span>
+          <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3 relative z-10">
+            <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-cyan-400 to-blue-400 drop-shadow-md">
+              Huella de carbono total
+            </h3>
+            <span class="bg-cyan-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+              Donut
+            </span>
+          </div>
+
+          <div id="chartHuella" class="relative z-20 h-[290px]"></div>
+          <div class="absolute bottom-0 left-0 right-0 h-[80px] bg-gradient-to-t from-emerald-400/10 via-transparent to-transparent rounded-b-3xl"></div>
         </div>
-
-        <div id="chartHuella" class="relative z-20 h-[290px]"></div>
-
-        <!-- Resplandor inferior -->
-        <div class="absolute bottom-0 left-0 right-0 h-[80px] bg-gradient-to-t from-emerald-400/10 via-transparent to-transparent rounded-b-3xl"></div>
       </div>
-    </div>
-  `;
+    `;
+  } else {
+    // 🔹 Si ya existe, solo limpiamos el gráfico anterior
+    const chartDiv = graficoContainer.querySelector("#chartHuella");
+    chartDiv.innerHTML = "";
+  }
 
   try {
-    const res = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch-huella-carbono.php");
+    const res = await fetch(
+      `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch-huella-carbono.php?${params.toString()}`
+    );
     const data = await res.json();
     if (!data || data.length === 0) return;
 
-    // Totales
-    const totales = { Viales: 0, Pesados: 0, Livianos: 0 };
-    data.forEach(mes => {
-      totales.Viales += mes.Viales || 0;
-      totales.Pesados += mes.Pesados || 0;
-      totales.Livianos += mes.Livianos || 0;
-    });
-
+    const totales = data.data;
     const categorias = Object.keys(totales);
     const valores = Object.values(totales);
 
     const colores = [
-      "rgba(251,191,36,1)",   // Viales
-      "rgba(220,38,38,1)",    // Pesados
-      "rgba(34,197,94,1)"     // Livianos
+      "rgba(251,191,36,1)",
+      "rgba(220,38,38,1)",
+      "rgba(34,197,94,1)",
     ];
 
     const gradientes = [
-      ["#FACC15", "#F59E0B"], // dorado
-      ["#DC2626", "#B91C1C"], // rojo
-      ["#10B981", "#059669"]  // verde
+      ["#FACC15", "#F59E0B"],
+      ["#DC2626", "#B91C1C"],
+      ["#10B981", "#059669"],
     ];
 
-    // === Configuración ApexCharts ===
+    // 🔹 Si ya existe un gráfico, destrúyelo antes de crear uno nuevo
+    if (window.chartHuellaInstance) {
+      window.chartHuellaInstance.destroy();
+    }
+
     const chart = new ApexCharts(document.querySelector("#chartHuella"), {
       chart: {
         type: "donut",
@@ -281,7 +298,7 @@ export async function crearComponenteChartHuellaTorta() {
           startAngle: -100,
           endAngle: 260,
           donut: {
-            size: "60%", 
+            size: "60%",
             background: "transparent",
             labels: {
               show: true,
@@ -300,9 +317,7 @@ export async function crearComponenteChartHuellaTorta() {
                 offsetY: -8,
                 formatter: val => `${val.toFixed(1)} kg`,
               },
-              total: {
-                show: false,
-              },
+              total: { show: false },
             },
           },
         },
@@ -320,11 +335,7 @@ export async function crearComponenteChartHuellaTorta() {
           stops: [0, 80, 100],
         },
       },
-      stroke: {
-        show: true,
-        width: 6,
-        colors: ["#1e293b"], // sombra interna tipo 3D
-      },
+      stroke: { show: true, width: 6, colors: ["#1e293b"] },
       dataLabels: {
         enabled: true,
         dropShadow: {
@@ -334,11 +345,7 @@ export async function crearComponenteChartHuellaTorta() {
           blur: 3,
           opacity: 0.6,
         },
-        style: {
-          fontSize: "11px",
-          fontWeight: "600",
-          colors: ["#fff"],
-        },
+        style: { fontSize: "11px", fontWeight: "600", colors: ["#fff"] },
       },
       legend: {
         position: "bottom",
@@ -364,6 +371,7 @@ export async function crearComponenteChartHuellaTorta() {
         },
       ],
     });
+    window.chartHuellaInstance = chart;
 
     chart.render().then(() => {
       const center = document.querySelector(".apexcharts-datalabels-group");
@@ -379,6 +387,7 @@ export async function crearComponenteChartHuellaTorta() {
     console.error("Error al generar el gráfico de huella de carbono:", err);
   }
 }
+
 
 
 // === CONSUMO DE GASOIL ===
@@ -490,41 +499,57 @@ export async function crearComponenteChartGasoil() {
   }
 }
 
+let chartMotoniveladora = null; // instancia global del gráfico
 
+export async function crearComponenteChartMotoniveladora(filtros = {}) {
+  // Guardar filtros activos
+  if (Object.keys(filtros).length > 0) {
+    filtrosActivos = filtros;
+  }
 
+  const { fechaInicio = "", fechaFin = "" } = filtrosActivos;
+  const params = new URLSearchParams();
 
-// === MOTONIVELADORA ===
-export async function crearComponenteChartMotoniveladora() {
+  if (fechaInicio) params.append("fechaInicio", fechaInicio);
+  if (fechaFin) params.append("fechaFin", fechaFin);
+
   const dashboard = document.getElementById("fila-secundaria");
   dashboard.className = "grid grid-cols-1 md:grid-cols-2 gap-6 p-4";
 
-  const graficoContainer = document.createElement("div");
-  graficoContainer.className = "flex justify-center items-center w-full";
-  dashboard.appendChild(graficoContainer);
+  let graficoContainer = document.getElementById("graficoMotoniveladoraContainer");
+  if (!graficoContainer) {
+    graficoContainer = document.createElement("div");
+    graficoContainer.id = "graficoMotoniveladoraContainer";
+    graficoContainer.className = "flex justify-center items-center w-full";
 
-  graficoContainer.innerHTML = `
-    <div class="w-full h-full">
-      <div class="cardx relative p-6 h-[400px] md:h-[460px] rounded-3xl border border-white/10 
-      shadow-[0_0_40px_rgba(234,179,8,0.15)] bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-gray-900/95 
-      backdrop-blur-2xl transition-all duration-700 hover:shadow-[0_0_70px_rgba(234,179,8,0.3)] hover:scale-[1.02]">
+    graficoContainer.innerHTML = `
+      <div class="w-full h-full">
+        <div class="cardx relative p-6 h-[400px] md:h-[460px] rounded-3xl border border-white/10 
+        shadow-[0_0_40px_rgba(234,179,8,0.15)] bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-gray-900/95 
+        backdrop-blur-2xl transition-all duration-700 hover:shadow-[0_0_70px_rgba(234,179,8,0.3)] hover:scale-[1.02]">
 
-        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
-          <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-400 drop-shadow-md">
-            Comparativa por Lugar - Motoniveladora
-          </h3>
-          <span class="bg-yellow-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
-            Columnas
-          </span>
+          <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+            <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-red-400 drop-shadow-md">
+              Comparativa por Lugar - Motoniveladora
+            </h3>
+            <span class="bg-yellow-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+              Columnas
+            </span>
+          </div>
+
+          <p class="text-sm text-slate-300 mb-2">Kilómetros recorridos y repaso</p>
+          <div id="chartMotoniveladoraLugar" class="h-[260px] md:h-[300px]"></div>
         </div>
-
-        <p class="text-sm text-slate-300 mb-2">Kilómetros recorridos y repaso</p>
-        <div id="chartMotoniveladoraLugar" class="h-[260px] md:h-[300px]"></div>
       </div>
-    </div>
-  `;
+    `;
+
+    dashboard.appendChild(graficoContainer);
+  }
 
   try {
-    const res = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch-motoniveladora.php");
+    const res = await fetch(
+      `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch-motoniveladora.php?${params.toString()}`
+    );
     const data = await res.json();
     if (!data.success) return;
 
@@ -540,7 +565,7 @@ export async function crearComponenteChartMotoniveladora() {
         background: "transparent",
         toolbar: { show: false },
         offsetY: 10,
-        parentHeightOffset: 20
+        parentHeightOffset: 20,
       },
       grid: { borderColor: "rgba(255,255,255,0.08)", padding: { bottom: 20 } },
       series: [
@@ -551,7 +576,7 @@ export async function crearComponenteChartMotoniveladora() {
       plotOptions: {
         bar: {
           borderRadius: 8,
-          columnWidth: lugares.length > 8 ? "35%" : "50%" // ✅ ajuste dinámico
+          columnWidth: lugares.length > 8 ? "35%" : "50%" // ajuste dinámico
         }
       },
       dataLabels: { enabled: false },
@@ -589,51 +614,82 @@ export async function crearComponenteChartMotoniveladora() {
       ]
     };
 
-    new ApexCharts(document.querySelector("#chartMotoniveladoraLugar"), opciones).render();
+    const chartEl = document.querySelector("#chartMotoniveladoraLugar");
+
+    // ✅ Si ya existe un gráfico, destruirlo antes de crear otro
+    if (chartMotoniveladora) {
+      await chartMotoniveladora.destroy();
+      chartMotoniveladora = null;
+    }
+
+    // Crear el nuevo gráfico
+    chartMotoniveladora = new ApexCharts(chartEl, opciones);
+    chartMotoniveladora.render();
+
   } catch (err) {
     console.error("Error:", err);
   }
 }
 
-// === CISTERNA ===
-export async function crearComponenteChartCisterna() {
+
+let chartCisterna = null; // instancia global del gráfico
+
+export async function crearComponenteChartCisterna(filtros = {}) {
+  // Guardar filtros activos
+  if (Object.keys(filtros).length > 0) {
+    filtrosActivos = filtros;
+  }
+
+  const { fechaInicio = "", fechaFin = "" } = filtrosActivos;
+  const params = new URLSearchParams();
+  if (fechaInicio) params.append("fechaInicio", fechaInicio);
+  if (fechaFin) params.append("fechaFin", fechaFin);
+
   const dashboard = document.getElementById("fila-secundaria");
   dashboard.className = "grid grid-cols-1 md:grid-cols-2 gap-6 p-4";
 
-  const graficoContainer = document.createElement("div");
-  graficoContainer.className = "flex justify-center items-center w-full";
-  dashboard.appendChild(graficoContainer);
+  // ✅ Crear contenedor solo si no existe
+  let graficoContainer = document.getElementById("graficoCisternaContainer");
+  if (!graficoContainer) {
+    graficoContainer = document.createElement("div");
+    graficoContainer.id = "graficoCisternaContainer";
+    graficoContainer.className = "flex justify-center items-center w-full";
 
-  graficoContainer.innerHTML = `
-    <div class="w-full h-full">
-      <div class="cardx relative p-6 h-[400px] md:h-[460px] rounded-3xl border border-white/10 
-      shadow-[0_0_40px_rgba(59,130,246,0.15)] bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-gray-900/95 
-      backdrop-blur-2xl transition-all duration-700 hover:shadow-[0_0_70px_rgba(59,130,246,0.3)] hover:scale-[1.02]">
+    graficoContainer.innerHTML = `
+      <div class="w-full h-full">
+        <div class="cardx relative p-6 h-[400px] md:h-[460px] rounded-3xl border border-white/10 
+        shadow-[0_0_40px_rgba(59,130,246,0.15)] bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-gray-900/95 
+        backdrop-blur-2xl transition-all duration-700 hover:shadow-[0_0_70px_rgba(59,130,246,0.3)] hover:scale-[1.02]">
 
-        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
-          <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 drop-shadow-md">
-            Comparativa por Lugar - Cisterna
-          </h3>
-          <span class="bg-blue-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
-            Columnas
-          </span>
+          <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-3">
+            <h3 class="text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 drop-shadow-md">
+              Comparativa por Lugar - Cisterna
+            </h3>
+            <span class="bg-blue-600/90 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+              Columnas
+            </span>
+          </div>
+
+          <p class="text-sm text-slate-300 mb-2">Metros cúbicos y cantidad de viajes</p>
+          <div id="chartCisternaLugar" class="h-[260px] md:h-[300px]"></div>
         </div>
-
-        <p class="text-sm text-slate-300 mb-2">Metros cúbicos y cantidad de viajes</p>
-        <div id="chartCisternaLugar" class="h-[260px] md:h-[300px]"></div>
       </div>
-    </div>
-  `;
+    `;
+
+    dashboard.appendChild(graficoContainer);
+  }
 
   try {
-    const res = await fetch("https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch-cisterna.php");
+    const res = await fetch(
+      `https://smartform.com.ar/hosmann/SistemaHosmann/server/backend/modules/fetch-cisterna.php?${params.toString()}`
+    );
     const data = await res.json();
     if (!data.success) return;
 
     const lugares = data.lugares.map(l => l.lugar);
     const m3Totales = data.lugares.map(l => l.totales.m3Batea);
     const viajesTotales = data.lugares.map(l => l.totales.viajesCisterna);
-    const colores = ["#3B82F6", "#06B6D4"]; // azul y cian
+    const colores = ["#3B82F6", "#06B6D4"];
 
     const opciones = {
       chart: {
@@ -697,9 +753,21 @@ export async function crearComponenteChartCisterna() {
       ]
     };
 
-    new ApexCharts(document.querySelector("#chartCisternaLugar"), opciones).render();
+    const chartEl = document.querySelector("#chartCisternaLugar");
+
+    // ✅ Si ya existe un gráfico, eliminarlo antes de crear uno nuevo
+    if (chartCisterna) {
+      await chartCisterna.destroy();
+      chartCisterna = null;
+    }
+
+    // Crear nuevo gráfico
+    chartCisterna = new ApexCharts(chartEl, opciones);
+    chartCisterna.render();
+
   } catch (err) {
-    console.error("Error:", err);
+    console.error("Error al generar el gráfico de cisterna:", err);
   }
 }
+
 
